@@ -1,33 +1,25 @@
 package com.group.commitapp.config;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
-public class SwaggerConfig implements WebMvcConfigurer {
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration    // 스프링 실행시 설정파일 읽어드리기 위한 어노테이션
+public class SwaggerConfig {
 
     @Bean
-    public GroupedOpenApi publicApi() {
-        return GroupedOpenApi.builder()
-                .group("spring")
-                .packagesToScan("com.group.commitapp.controller")
-                .build();
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .components(new Components())
+                .info(apiInfo());
     }
 
-    // Swagger UI 리소스 경로 설정
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Swagger UI 접근을 위한 리소스 핸들러
-        registry.addResourceHandler("/swagger-ui/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/")
-                .resourceChain(false);
+    private Info apiInfo() {
+        return new Info()
+                .title("CodeArena Swagger")
+                .description("CodeArena 유저 및 인증 , ps, 알림에 관한 REST API")
+                .version("1.0.0");
     }
 }
-
-//springdoc.swagger-ui.path=/swagger-ui.html
