@@ -34,7 +34,7 @@ public class TeamController {
     }
 
     //@ApiOperation(value = "해당 그룹의 그룹원들 출력 ", notes = " api/group/{groupId}")
-    @GetMapping("/find/{groupId}}")
+    @GetMapping("/find/{groupId}")
     public Result<?> findGroupMembers(@PathVariable Long groupId){
         return new Result<>("findGroupMembersDTO here");
     }
