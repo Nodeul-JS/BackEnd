@@ -1,4 +1,4 @@
-package com.group.commitapp.user.dto.request;
+package com.group.commitapp.dto.request;
 
 import lombok.Getter;
 

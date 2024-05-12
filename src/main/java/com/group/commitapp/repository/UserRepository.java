@@ -1,8 +1,7 @@
-package com.group.commitapp.user.repository;
+package com.group.commitapp.repository;
 
-import com.group.commitapp.user.domain.User;
+import com.group.commitapp.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
