@@ -25,7 +25,7 @@ public class UserServiceV2 {
   // 혹시라도 문제가 있다면 rollback
   @Transactional
   public void saveUser(UserCreateRequest request) {
-    userRepository.save(new User(request.getName(), request.getAge()));
+    userRepository.save(new gitUser(request.getName(), request.getAge()));
   }
 
   @Transactional(readOnly = true)

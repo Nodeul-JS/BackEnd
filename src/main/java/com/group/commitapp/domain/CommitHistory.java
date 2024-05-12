@@ -32,5 +32,5 @@ public class CommitHistory {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    // Constructors, getters, and setters
+
 }
