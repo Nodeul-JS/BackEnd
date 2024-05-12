@@ -1,10 +1,10 @@
-package com.group.commitapp.user.service;
+package com.group.commitapp.service;
 
-import com.group.commitapp.user.domain.User;
-import com.group.commitapp.user.dto.request.UserCreateRequest;
-import com.group.commitapp.user.dto.request.UserUpdateRequest;
-import com.group.commitapp.user.dto.response.UserResponse;
-import com.group.commitapp.user.repository.UserRepository;
+import com.group.commitapp.domain.User;
+import com.group.commitapp.dto.request.UserCreateRequest;
+import com.group.commitapp.dto.request.UserUpdateRequest;
+import com.group.commitapp.dto.response.UserResponse;
+import com.group.commitapp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

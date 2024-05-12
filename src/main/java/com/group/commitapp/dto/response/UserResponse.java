@@ -1,6 +1,6 @@
-package com.group.commitapp.user.dto.response;
+package com.group.commitapp.dto.response;
 
-import com.group.commitapp.user.domain.User;
+import com.group.commitapp.domain.User;
 import lombok.Getter;
 
 @Getter
