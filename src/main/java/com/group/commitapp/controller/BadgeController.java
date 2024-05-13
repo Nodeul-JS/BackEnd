@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/badge")
-//@Api(value = "UserController", description = "reward API")
+//@Api(value = "UserController", descripq`tion = "reward API")
 public class BadgeController {
     @Data
     @AllArgsConstructor

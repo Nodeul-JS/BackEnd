@@ -24,8 +24,8 @@ public class CommitHistory {
     private Boolean isCommit;
     private Boolean isDescript;
     private Date createdAt;
-    private Integer like;
-    private Integer dislike;
+    private Integer good;
+    private Integer bad;
     private String githubLink;
 
     @ManyToOne(fetch = FetchType.LAZY)
