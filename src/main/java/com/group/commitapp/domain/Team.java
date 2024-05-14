@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,8 +23,17 @@ public class Team {
     private String description;
     private boolean isDeleted;
 
+
+
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Member> members;
+    public static Team saveTeam(String teamName, Integer maxMember, String description) {
+        Team team = new Team();
+        team.setTeamName(teamName);
+        team.setMaxMember(maxMember);
+        team.setDescription(description);
+        return team;
+    }
 
 
 }

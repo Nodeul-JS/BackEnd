@@ -27,6 +27,12 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teamId")
     private Team team;
+    public static Member saveMember(Users user, Team team) {
+        Member member = new Member();
+        member.setUsers(user);
+        member.setTeam(team);
+        return member;
+    }
 
 
 }

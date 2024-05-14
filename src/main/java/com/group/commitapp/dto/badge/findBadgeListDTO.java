@@ -1,5 +1,7 @@
 package com.group.commitapp.dto.badge;
 
+import com.group.commitapp.domain.Badge;
+import com.group.commitapp.domain.BadgeHistory;
 import lombok.Getter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +15,12 @@ import lombok.NoArgsConstructor;
         "createdAt]")
 @Getter
 public class findBadgeListDTO {
+    public findBadgeListDTO(Badge badge, BadgeHistory badgeHistory) {
+        this.badgeName = badge.getName();
+        this.descrip = badge.getDescription();
+        this.createdAt = badgeHistory.getCreatedAt().toString();
+
+    }
 
     @Schema(description = "뱃지 이름")
     private String badgeName;

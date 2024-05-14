@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 public class createGroupDTO {
     @Schema(description = "그룹 이름")
     private String groupName;
-    @Schema(description = "그룹 설명")
-    private String groupDescription;
+
     @Schema(description = "그룹 인원 수")
-    private int groupMemberNum;
+    private int groupNum;
     @Schema(description = "그룹 설명")
     private String description;
 
