@@ -1,14 +1,12 @@
 package com.group.commitapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group.commitapp.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,6 +25,26 @@ public class User {
   private Integer experience;
   private String name;
 
+  private String providerId;
+
+  @Enumerated(value = EnumType.STRING)
+  private Role role; // OAuth
+
+  private User(String githubId, String providerId) { // github login
+//    this.name = name;
+    this.githubId = githubId; // 깃허브 아이디
+    this.providerId = providerId; //식별 고유번호
+//    this.role = Role.ROLE_USER; //어드민or유저계정인지 체크
+  }
+
+  public static User of(String githubId, String providerId) {
+    if (githubId == null || githubId.isBlank()) {
+      throw new IllegalArgumentException(String.format("잘못된 name(%s)이 들어왔습니다", githubId));
+    }
+    return new User(githubId, providerId);
+  }
+
+
   @JsonIgnore
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Member> members;
@@ -43,5 +61,6 @@ public class User {
   public void updateName(String name) {
     this.name = name;
   }
+
 
 }
