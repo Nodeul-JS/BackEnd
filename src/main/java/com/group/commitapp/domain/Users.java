@@ -1,14 +1,12 @@
 package com.group.commitapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group.commitapp.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -17,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class Users {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +25,7 @@ public class User {
   private Integer freezeCnt;
   private Integer experience;
   private String name;
+  private boolean isCommit;
 
 
   @JsonIgnore

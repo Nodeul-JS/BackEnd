@@ -19,9 +19,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamId;
     @Column(nullable = false, length = 255, name = "team_name")
-    private String name;
+    private String TeamName;
     private Integer maxMember;
     private String description;
+    private boolean isDeleted;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Member> members;
