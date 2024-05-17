@@ -1,0 +1,78 @@
+[33mcommit cebebafe4ccc606ebed22f40fd585e4da8bc90bd[m[33m ([m[1;36mHEAD -> [m[1;32mfeature/basic-api[m[33m)[m
+Author: seulhuiOh <mycindy0710@cau.ac.kr>
+Date:   Sat May 18 01:52:22 2024 +0900
+
+    feat: 뱃지, 그룹api
+
+[33mcommit 164e85d7c9f1ea80f7dbf7d965a4e7faee8b7bf9[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Wed May 15 06:55:06 2024 +0900
+
+    ft: basic api
+
+[33mcommit df37912e6a6e1323607c7174fdaab30bf04c5333[m[33m ([m[1;32mfeature/crud-operations[m[33m)[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Wed May 15 06:34:22 2024 +0900
+
+    ft: crud api operation
+
+[33mcommit 2d9e1516576d39c9f640c11560b41dde5a111cc0[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Wed May 15 06:26:09 2024 +0900
+
+    ft: add api
+
+[33mcommit cdbfe3a58a19be949a31f46880a810715f5b0c60[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Wed May 15 02:57:42 2024 +0900
+
+    ft: add api
+
+[33mcommit 63bf280e2b9ab44562cb419b6998baf0423d0171[m[33m ([m[1;32mmaster[m[33m)[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Wed May 15 02:48:36 2024 +0900
+
+    ft: add group list api
+
+[33mcommit a7fc276ef054d665db7e4f9f2d5bfc92b3cddfc5[m
+Merge: ecffee7 31b1f1a
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Mon May 13 17:40:10 2024 +0900
+
+    ft:클래스만 생성함
+
+[33mcommit ecffee7442af0410ee6753643f60453c037c766b[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Mon May 13 04:52:34 2024 +0900
+
+    바뀐거 없ì음
+
+[33mcommit 31b1f1acbb65e8a138b15bdf1a3d2efe55ef44b7[m[33m ([m[1;31morigin/crud-basic[m[33m)[m
+Author: ryuwldnjs <ryu_eclipse@naver.com>
+Date:   Mon May 13 04:19:31 2024 +0900
+
+    config : 스웨거 연결
+
+[33mcommit 2e61439705a22f02b36acac16fa5d217a7f88ecd[m
+Author: DESKTOP-QERB3FS\mycin <mycindy0710@cau.ac.kr>
+Date:   Mon May 13 02:50:44 2024 +0900
+
+    첫번째 커밋
+
+[33mcommit d6ec01c8f041af86eded6209b088f861cccf57f6[m
+Author: ryuwldnjs <ryu_eclipse@naver.com>
+Date:   Fri May 10 20:03:12 2024 +0900
+
+    etc : 파일분리
+
+[33mcommit baa7c97b182c51ef8fcd4eab2887002d84a8d49d[m
+Author: ryuwldnjs <ryu_eclipse@naver.com>
+Date:   Mon May 6 23:07:32 2024 +0900
+
+    docs : 리드미 수정
+
+[33mcommit c549415071b621253b0eb9c438141432ca9cf313[m
+Author: ryuwldnjs <ryu_eclipse@naver.com>
+Date:   Mon May 6 22:23:30 2024 +0900
+
+    start
