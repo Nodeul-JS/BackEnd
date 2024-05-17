@@ -25,17 +25,24 @@ public class GitController {
         return new Result<>("findCommitListDTO here");
     }
 
+
+
     @PutMapping("/update/Streak/{userId}")
     @Operation(summary =  "Streak 지급 ", description = "user Streak update")
     public Result<?> updateStreak(){
         return new Result<>("updateStreakDTO here");
     }
 
+
+
     //@ApiOperation(value = "스트릭 지급 ", notes = "/api/git/update/freeze/{userId}")
     @PutMapping("/update/freeze/{userId}")
     @Operation(summary =  "프리즈 지급 ", description = "user 프리즈 update")
     public Result<?> updateFreeze(){
         return new Result<>("updateFreezeDTO here");
+
+
+
     }
 
 
