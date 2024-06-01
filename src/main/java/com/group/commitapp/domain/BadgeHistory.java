@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -17,11 +18,28 @@ public class BadgeHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rewardId;
-    private Date createdAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now(); // 생성 시간 설정
+    }
+
+    // Static factory method to create a new BadgeHistory
+    public static BadgeHistory saveBadgeHistory(Users user, Badge badge) {
+        BadgeHistory badgeHistory = new BadgeHistory();
+        badgeHistory.setUser(user);
+        badgeHistory.setBadge(badge);
+        return badgeHistory;
+    }
+
+    private void setUser(Users user) {
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private Users users;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "badgeId", nullable = false)

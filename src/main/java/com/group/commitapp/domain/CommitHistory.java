@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
+
 @Entity
 @Table(name = "commitHistory")
 @Getter
@@ -30,7 +29,7 @@ public class CommitHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private Users users;
 
-    // Constructors, getters, and setters
+
 }

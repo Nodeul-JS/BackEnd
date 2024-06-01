@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.yml/
+*.yml
 .yml/
 *.yaml/
 application.yml
@@ -28,7 +29,11 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
+*.yml/
+*.yml
+.yml/
+*.yaml/
+application.yml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
