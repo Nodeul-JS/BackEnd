@@ -23,7 +23,6 @@ public class BadgeController {
         return new Result<>("findBadgeDTO here");
     }
 
-
     //@ApiOperation(value = "뱃지 조회 ", notes = "/api/badge/{badgeId}")
     //@GetMapping("/{badgeId}")
     public Result<?> findBadgeById(){

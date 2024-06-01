@@ -1,10 +1,8 @@
 package com.group.commitapp.domain;
 
+import com.group.commitapp.dto.request.team.CreateTeamRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@AllArgsConstructor
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +23,12 @@ public class Team {
     private String description;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Member> members;
+    private List<Member> members = new ArrayList<>();
 
-
+    // 생성자에 DTO를 전달받아 초기화하는 생성자
+    public Team(CreateTeamRequest request) {
+        this.name = request.getGroupName();
+        this.maxMember = request.getMaxMember();
+        this.description = request.getDescription();
+    }
 }
