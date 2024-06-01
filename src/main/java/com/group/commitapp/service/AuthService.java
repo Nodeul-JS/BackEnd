@@ -100,6 +100,7 @@ public class AuthService {
 
     private User forceJoin(OAuthInfo oAuthInfo) {
         User user = User.of(oAuthInfo.getUsername(), oAuthInfo.getIdNumber());
+        System.out.println(user.getLevel());
         return userRepository.save(user);
     }
 }

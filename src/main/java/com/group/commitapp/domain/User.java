@@ -35,6 +35,9 @@ public class User {
     this.githubId = githubId; // 깃허브 아이디
     this.providerId = providerId; //식별 고유번호
 //    this.role = Role.ROLE_USER; //어드민or유저계정인지 체크
+    this.level = 1; //레벨
+    this.experience = 0; //경험치
+//    this.freezeCnt = 0; //프리즈 카운트
   }
 
   public static User of(String githubId, String providerId) {
