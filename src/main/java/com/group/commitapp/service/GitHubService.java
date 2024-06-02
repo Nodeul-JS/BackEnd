@@ -44,16 +44,16 @@ public class GitHubService {
             for (JsonNode event : events) {
                 if (event.get("type").asText().equals("PushEvent")) { //푸쉬만 가져오기
                     String eventDate = event.get("created_at").asText().substring(0, 10);
-                    System.out.println("eventDate: "+eventDate);
+//                    System.out.println("eventDate: "+eventDate);
                     if (today.format(formatter).equals(eventDate)) {//오늘꺼만 가져오기
-                        System.out.println("event: "+event);
+//                        System.out.println("event: "+event);
                         String repoName = event.get("repo").get("name").asText();
-                        JsonNode commits = event.get("payload").get("commits");
-                        for (JsonNode commit : commits) {
-                            String sha = commit.get("sha").asText();
-                            String commitUrl = "https://github.com/" + repoName + "/commit/" + sha;
-                            commitUrls.add(commitUrl);
-                        }
+                        String sha = event.get("payload").get("head").asText();
+//                        System.out.println(repoName);
+//                        System.out.println(sha);
+                        String commitUrl = "https://github.com/" + repoName + "/commit/" + sha;
+//                        System.out.println(commitUrl);
+                        commitUrls.add(commitUrl);
                     }
                 }
             }

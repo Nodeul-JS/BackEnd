@@ -35,7 +35,6 @@ public class GithubController {
     public ResponseEntity<List<String>> getTodayCommitUrls(@PathVariable String githubId) {
         try {
             List<String> commitUrls = gitHubService.getTodayCommitUrls(githubId);
-//            System.out.println(githubId);
             System.out.println(commitUrls);
             return ResponseEntity.ok(commitUrls);
         } catch (IOException e) {
