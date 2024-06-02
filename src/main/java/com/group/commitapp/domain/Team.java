@@ -1,5 +1,7 @@
 package com.group.commitapp.domain;
 
+import com.group.commitapp.dto.request.team.CreateTeamRequest;
+import com.group.commitapp.dto.team.createTeamDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +21,7 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamId;
     @Column(nullable = false, length = 255, name = "team_name")
-    private String TeamName;
+    private String teamName;
     private Integer maxMember;
     private String description;
     private boolean isDeleted;
@@ -30,9 +32,18 @@ public class Team {
     private List<Member> members;
 
     // 생성자에 DTO를 전달받아 초기화하는 생성자
-    public Team(CreateTeamRequest request) {
-        this.name = request.getGroupName();
-        this.maxMember = request.getMaxMember();
+    public Team(createTeamDTO request) {
+        this.teamName = request.getTeamName();
+//        this.maxMember = request.getMaxMember();
         this.description = request.getDescription();
     }
+
+    public static Team saveTeam(String teamName, Integer maxMember, String description) {
+        Team team = new Team();
+        team.setTeamName(teamName);
+        team.setMaxMember(maxMember);
+        team.setDescription(description);
+        return team;
+    }
+
 }

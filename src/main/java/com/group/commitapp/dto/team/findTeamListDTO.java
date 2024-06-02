@@ -1,4 +1,4 @@
-package com.group.commitapp.dto.group;
+package com.group.commitapp.dto.team;
 
 import com.group.commitapp.domain.Team;
 import lombok.*;
@@ -9,9 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = " DTO")
 @Getter
 @RequiredArgsConstructor
-public class findGroupListDTO {
+public class findTeamListDTO {
 
-    public findGroupListDTO(Team team) {
+    public findTeamListDTO(Team team) {
         this.teamId = team.getTeamId();
         this.teamName = team.getTeamName();
         this.teamSize = team.getMembers().size();

@@ -27,19 +27,19 @@ public class BadgeHistory {
     }
 
     // Static factory method to create a new BadgeHistory
-    public static BadgeHistory saveBadgeHistory(Users user, Badge badge) {
+    public static BadgeHistory saveBadgeHistory(User user, Badge badge) {
         BadgeHistory badgeHistory = new BadgeHistory();
         badgeHistory.setUser(user);
         badgeHistory.setBadge(badge);
         return badgeHistory;
     }
 
-    private void setUser(Users user) {
+    private void setUser(User user) {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
-    private Users users;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "badgeId", nullable = false)

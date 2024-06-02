@@ -1,9 +1,10 @@
 package com.group.commitapp.controller;
 
 
-import com.group.commitapp.dto.group.createGroupDTO;
-import com.group.commitapp.dto.group.findGroupListDTO;
-import com.group.commitapp.dto.group.findMemberListDTO;
+import com.group.commitapp.dto.Result;
+import com.group.commitapp.dto.team.createTeamDTO;
+import com.group.commitapp.dto.team.findTeamListDTO;
+import com.group.commitapp.dto.team.findMemberListDTO;
 import com.group.commitapp.service.MemberService;
 import com.group.commitapp.service.TeamService;
 import com.group.commitapp.service.UserService;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,17 +33,18 @@ public class TeamController {
     }
 
 
-    @Operation(summary =  "그룹 조회 ", description = "사용자가 속한 그룹 리스트 정보 반환")
-    @GetMapping("/find/{userId}")
-    public Result<List<findGroupListDTO>> findGroup(@PathVariable Long userId){
-        List<findGroupListDTO> findGroupListDTO = teamService.getTeamsByUserId(userId);
-        return new Result<>(findGroupListDTO);
+    @Operation(summary =  "가입한 팀 조회 ", description = "사용자가 속한 팀 리스트 정보 반환")
+    @GetMapping("/myTeamList/{userId}")
+    public Result<List<findTeamListDTO>> findGroup(@PathVariable Long userId){
+        return new Result<>(teamService.getTeamsByUserId(userId));
     }
 
 
-    @PostMapping("/create/{userId}")
-    public void createGroup(@RequestBody createGroupDTO dto ,@PathVariable Long userId){
-        teamService.createGroup(dto,userId); // make empty team and save
+    @PostMapping("")
+    public Result<Void> createGroup(@RequestBody createTeamDTO dto){
+        teamService.createGroup(dto); // make empty team and save
+        return new Result<>();
+//        return ResponseEntity.ok("Group Created");
         //memberService.createGroupAndMember(dto,userId);// add user as member
         // POST : 저장 할거니까 더이상 쓸게 없다
     }
@@ -55,7 +58,7 @@ public class TeamController {
 
     //@ApiOperation(value = "해당 그룹의 그룹원들 출력 ", notes = " api/group/{groupId}")
     @Operation(description = "자세한 설명은 생략" , summary = "해당 그룹의 그룹원들 출력")
-    @GetMapping("/find/{teamId}")
+    @GetMapping("/memberList/{teamId}")
     public Result<List<findMemberListDTO>> findGroupMembers(@PathVariable Long teamId){
         List<findMemberListDTO> DtoList = teamService.getMemberListByTeamId(teamId);
         return new Result<>(DtoList);
@@ -65,7 +68,7 @@ public class TeamController {
 
     //@ApiOperation(value = "그룹 삭제", notes = "api/group")
     @Operation(description = "그룹 삭제 " , summary = "그룹 삭제")
-    @DeleteMapping("/delete/{teamId}")
+    @DeleteMapping("/{teamId}")
     public void deleteGroup(@PathVariable Long teamId){
         teamService.deleteGroup(teamId);
 
@@ -82,13 +85,6 @@ public class TeamController {
         teamService.disableGroup(teamId);
     }
 
-
-
-    @Data
-    @AllArgsConstructor
-    static class Result<T>{
-        private T data;
-    }
 
 
 

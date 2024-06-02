@@ -1,22 +1,20 @@
-package com.group.commitapp.dto.group;
+package com.group.commitapp.dto.team;
 
 
 import com.group.commitapp.domain.Member;
 import lombok.Getter;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = " DTO")
 @Getter
 public class findMemberListDTO {
     public findMemberListDTO(Member member) {
-        this.UserName = member.getUsers().getName();
-        this.isCommit = member.getUsers().isCommit();
-        this.level = member.getUsers().getLevel();
+        this.UserName = member.getUser().getName();
+        this.isCommit = member.getUser().isCommit();
+        this.level = member.getUser().getLevel();
         this.maxMember = member.getTeam().getMaxMember();
         this.currentMember = member.getTeam().getMembers().size();
     }

@@ -22,17 +22,27 @@ public class Member {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
-    private Users users;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teamId")
     private Team team;
-    public static Member saveMember(Users user, Team team) {
-        Member member = new Member();
-        member.setUsers(user);
-        member.setTeam(team);
-        return member;
+
+    public Member(User user, Team team){
+        this(user, team, false);
     }
+    public Member(User user, Team team, boolean isHead){
+        this.user = user;
+        this.team = team;
+        this.isHead = isHead;
+    }
+//    public static Member saveMember(User user, Team team, boolean isHead){
+//        Member member = new Member();
+//        member.setUser(user);
+//        member.setTeam(team);
+//        member.setIsHead(isHead);
+//        return member;
+//    }
 
 
 }

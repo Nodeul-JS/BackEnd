@@ -2,7 +2,7 @@ package com.group.commitapp.service;
 
 import com.group.commitapp.domain.Badge;
 import com.group.commitapp.domain.BadgeHistory;
-import com.group.commitapp.domain.Users;
+import com.group.commitapp.domain.User;
 import com.group.commitapp.dto.badge.findBadgeDTO;
 import com.group.commitapp.dto.badge.findBadgeListDTO;
 import com.group.commitapp.repository.BadgeHistoryRepository;
@@ -28,7 +28,7 @@ private final UserRepository userRepository;
     @Transactional
     public List<findBadgeListDTO> findBadgeList(Long usersId) { // 변수명 오류 수정: usersid -> usersId
         // 사용자 정보 조회
-        Users user = userRepository.findById(usersId)
+        User user = userRepository.findById(usersId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
 
         // 사용자의 뱃지 기록 조회
@@ -57,7 +57,7 @@ private final UserRepository userRepository;
 
     @Transactional
     public void createBadge(Long userId, Long badgeId) {
-        Users user = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
         Badge badge = badgeRepository.findById(badgeId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));

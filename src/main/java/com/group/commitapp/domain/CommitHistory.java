@@ -29,7 +29,7 @@ public class CommitHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
-    private Users users;
+    private User user;
 
 
 }

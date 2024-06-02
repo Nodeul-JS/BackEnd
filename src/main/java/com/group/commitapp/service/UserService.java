@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
 
 
-    }
+}
