@@ -19,9 +19,9 @@ public class CommitHistory {
     private Long historyId;
     private String title;
     private String description;
-    private String askGpt;
-    private Boolean isCommit;
-    private Boolean isDescript;
+//    private String askGpt;
+//    private Boolean isCommit;
+//    private Boolean isDescript;
     private Date createdAt;
     private Integer good;
     private Integer bad;

@@ -1,6 +1,7 @@
 package com.group.commitapp.controller;
 
 
+import com.group.commitapp.domain.CommitHistory;
 import com.group.commitapp.service.GitHubService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GithubController {
     private final GitHubService gitHubService;
+    private GitHubService commitHistoryService;
 
     @Data
     @AllArgsConstructor
@@ -30,6 +32,27 @@ public class GithubController {
 //    public Result<?> findCommitList(){
 //        return new Result<>("findCommitListDTO here");
 //    }
+    @GetMapping("/commitStatus/{githubId}")
+    @Operation(summary =  "오늘 깃허브 커밋 이력", description = "user의 오늘 깃허브 커밋 이력 조회, 없으면 null, 500에러 반환")
+    public ResponseEntity<String> getWhetherCommitToday(@PathVariable String githubId) {
+        try {
+//            List<String> commitUrls = gitHubService.getTodayCommitUrls(githubId);
+            if(gitHubService.getTodayCommitUrls(githubId).isEmpty()){
+                return ResponseEntity.ok("commitNotYet");
+            }
+//            List<CommitHistory> commitHistories = commitHistoryService.getTodayCommitsByGithubId(githubId);
+            if(commitHistoryService.getTodayCommitsByGithubId(githubId).isEmpty()){
+                return ResponseEntity.ok("AINotYet");
+            }
+
+            return ResponseEntity.ok("commitDone");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+
+
     @GetMapping("/todayCommit/{githubId}")
     @Operation(summary =  "오늘 깃허브 커밋 이력", description = "user의 오늘 깃허브 커밋 이력 조회, 없으면 null, 500에러 반환")
     public ResponseEntity<List<String>> getTodayCommitUrls(@PathVariable String githubId) {
