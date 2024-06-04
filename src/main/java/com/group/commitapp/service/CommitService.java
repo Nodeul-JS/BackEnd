@@ -43,8 +43,11 @@ public class CommitService {
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("authorization","Bearer ${oauth2.user.github.access-token}")
                 .addHeader("Accept", "application/vnd.github.v3+json")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
                 .build();
+
 
         try (Response response = httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
@@ -79,6 +82,7 @@ public class CommitService {
                                 + "/commit/"
                                 + event.get("payload").get("head").asText()
                         );
+
                     }
                 }
             }

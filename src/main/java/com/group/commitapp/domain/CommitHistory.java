@@ -36,7 +36,7 @@ public class CommitHistory {
         this.user = user;
         this.title = commitHistoryDTO.getTitle();
         this.description = commitHistoryDTO.getDescription();
-//        this.githubLink = commitHistoryDTO.getGithubLink();
+        this.githubLink = commitHistoryDTO.getGithubLink();
         this.createdAt = new Date();
         this.good = 0;
         this.bad = 0;

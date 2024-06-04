@@ -28,7 +28,7 @@ public class OAuthController {
     }
 
     @GetMapping("/login/oauth")
-    public ResponseEntity<LoginResponse> getToken(
+    public RedirectView getToken(
             @RequestParam String code,
             @RequestParam String state) {
 
@@ -36,7 +36,9 @@ public class OAuthController {
         OAuthInfo gitHubUserInfo = authService.getGitHubUserInfo(accessTokenInfo);
 
         LoginResponse login = authService.login(gitHubUserInfo);
-        return new ResponseEntity<>(HttpStatusCode.valueOf(HttpStatus.OK.value())).ok().body(login);
+        return new RedirectView("http://localhost:3000/MyProfile/"+login.githubId()+"?token=" + login.githubId());
+//        return new ResponseEntity<>(HttpStatusCode.valueOf(HttpStatus.OK.value())).ok().body(login);
+//        return new ResponseEntity<>(login, HttpStatus.OK);
     }
 
 

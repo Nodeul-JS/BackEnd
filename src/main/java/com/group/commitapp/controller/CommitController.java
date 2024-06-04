@@ -1,6 +1,8 @@
 package com.group.commitapp.controller;
 
 
+import com.group.commitapp.common.dto.ApiResponse;
+import com.group.commitapp.common.enums.CustomResponseStatus;
 import com.group.commitapp.domain.CommitHistory;
 import com.group.commitapp.dto.commit.CommitHistoryDTO;
 import com.group.commitapp.dto.commit.CommitReviewDTO;
@@ -9,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,20 +36,21 @@ public class CommitController {
 
     @GetMapping("/commitStatus/{githubId}")
     @Operation(summary =  "오늘 깃허브 커밋 이력 (3가지 상태)", description = "user의 오늘 깃허브 커밋 이력 조회 {commitNotYet, AINotYet, commitDone} 없으면 null, 500에러 반환")
-    public ResponseEntity<String> getWhetherCommitToday(@PathVariable String githubId) {
+    public ResponseEntity<ApiResponse<String>> getWhetherCommitToday(@PathVariable String githubId) {
         try {
 //            List<String> commitUrls = gitHubService.getTodayCommitUrls(githubId);
             if(commitService.getTodayCommitUrls(githubId).isEmpty()){
-                return ResponseEntity.ok("commitNotYet");
+                return ResponseEntity.ok().body(ApiResponse.createSuccess("commitNotYet", CustomResponseStatus.SUCCESS));
             }
 //            List<CommitHistory> commitHistories = commitHistoryService.getTodayCommitsByGithubId(githubId);
             if(commitHistoryService.getTodayCommitsByGithubId(githubId).isEmpty()){
-                return ResponseEntity.ok("AINotYet");
+                return ResponseEntity.ok().body(ApiResponse.createSuccess("AINotYet", CustomResponseStatus.SUCCESS));
             }
-
-            return ResponseEntity.ok("commitDone");
+            return ResponseEntity.ok().body(ApiResponse.createSuccess("commitDone", CustomResponseStatus.SUCCESS));
+//            return ResponseEntity.ok("commitDone");
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
+                return ResponseEntity.ok().body(ApiResponse.createError(CustomResponseStatus.MEMBER_NOT_FOUND));
+
         }
     }
 
@@ -67,6 +72,8 @@ public class CommitController {
 
         CommitHistory updatedCommitHistory = commitService.addReviewToCommit(githubId);
         return ResponseEntity.ok(updatedCommitHistory);
+
+//        return new ResponseEntity<>(HttpStatusCode.valueOf(HttpStatus.OK.value())).ok().body(login);
     }
 
     @GetMapping("/commitHistory/{githubId}")
