@@ -11,6 +11,7 @@ import com.group.commitapp.repository.UserRepository;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,19 +32,22 @@ public class CommitService {
     private final CommitHistoryRepository commitHistoryRepository;
     private final UserRepository userRepository;
 //    private final MemberRepository userRepository;
-
-    public CommitService(CommitHistoryRepository commitHistoryRepository, UserRepository userRepository) {
+    private final String accessToken;
+    public CommitService(CommitHistoryRepository commitHistoryRepository
+            , UserRepository userRepository
+            ,@Value("${oauth2.user.github.access-token}") String accessToken) {
         this.commitHistoryRepository = commitHistoryRepository;
         this.userRepository = userRepository;
+        this.accessToken = accessToken;
     }
 
     public List<String> getTodayCommitUrls(String githubId) throws IOException {
         String url = "https://api.github.com/users/" + githubId + "/events";
         System.out.println("url: "+url);
-
+//        System.out.println(accessToken);
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("authorization","Bearer ${oauth2.user.github.access-token}")
+                .addHeader("authorization","Bearer " + accessToken)
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
                 .build();

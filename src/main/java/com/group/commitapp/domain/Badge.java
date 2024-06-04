@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.attoparser.dom.Text;
 
 
 @Entity
@@ -17,7 +18,7 @@ public class Badge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long badgeId;
     private String name;
-    private String description;
+    private Text description;
 
 
 }
