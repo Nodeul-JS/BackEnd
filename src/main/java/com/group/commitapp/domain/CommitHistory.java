@@ -1,5 +1,6 @@
 package com.group.commitapp.domain;
 
+import com.group.commitapp.dto.commit.CommitHistoryDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,5 +32,14 @@ public class CommitHistory {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    public CommitHistory(CommitHistoryDTO commitHistoryDTO, User user) {
+        this.user = user;
+        this.title = commitHistoryDTO.getTitle();
+        this.description = commitHistoryDTO.getDescription();
+//        this.githubLink = commitHistoryDTO.getGithubLink();
+        this.createdAt = new Date();
+        this.good = 0;
+        this.bad = 0;
+    }
 
 }
