@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommitService {
@@ -44,7 +45,7 @@ public class CommitService {
         this.gptService = gptService;
     }
 
-    public List<String> getTodayCommitUrls(String githubId) throws IOException {
+    public List<List<String>> getTodayCommitUrls(String githubId) throws IOException {
         String url = "https://api.github.com/users/" + githubId + "/events";
         System.out.println("url: "+url);
 //        System.out.println(accessToken);
@@ -63,7 +64,7 @@ public class CommitService {
 
             assert response.body() != null;
             JsonNode events = objectMapper.readTree(response.body().string());
-            List<String> commitUrls = new ArrayList<>();
+            List<List<String>> urls = new ArrayList<>();
             LocalDate today = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
@@ -80,25 +81,31 @@ public class CommitService {
                     // 날짜 부분만 추출하여 문자열로 변환
                     String eventDate = kstDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     // 날짜 부분만 추출하여 문자열로 변환
-                    if (today.format(formatter).equals(eventDate)) {//오늘꺼만 가져오기
-//                        String repoName = event.get("repo").get("name").asText();
-//                        String sha = event.get("payload").get("head").asText();
-//                        String commitUrl = "https://github.com/" + repoName+ "/commit/" + sha;
-                        commitUrls.add("https://api.github.com/repos/"
-                                + event.get("repo").get("name").asText()
-                                + "/commit/"
-                                + event.get("payload").get("head").asText()
-                        );
-//                        commitUrls.add("https://github.com/"
+                        String repoName = event.get("repo").get("name").asText();
+                        String sha = event.get("payload").get("head").asText();
+                        String commitUrl = "https://github.com/" + repoName+ "/commit/" + sha;
+                        String apiUrl = "https://api.github.com/repos/" + repoName + "/commits/" + sha;
+                        urls.add(List.of(commitUrl, apiUrl));
+                    //테스트를 위해 모든 커밋을 다 불러옵니다.
+//                    if (today.format(formatter).equals(eventDate)) {//오늘꺼만 가져오기
+////                        String repoName = event.get("repo").get("name").asText();
+////                        String sha = event.get("payload").get("head").asText();
+////                        String commitUrl = "https://github.com/" + repoName+ "/commit/" + sha;
+//                        commitUrls.add("https://api.github.com/repos/"
 //                                + event.get("repo").get("name").asText()
 //                                + "/commit/"
 //                                + event.get("payload").get("head").asText()
 //                        );
-
-                    }
+////                        commitUrls.add("https://github.com/"
+////                                + event.get("repo").get("name").asText()
+////                                + "/commit/"
+////                                + event.get("payload").get("head").asText()
+////                        );
+//
+//                    }
                 }
             }
-            return commitUrls;
+            return urls;
         }
     }
 
@@ -142,9 +149,11 @@ public class CommitService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid github ID: " + githubId));
 
         // GPT API를 호출하여 리뷰를 받습니다.
-        List<String> urls = getTodayCommitUrls(githubId);
-        String githubLink = urls.get(urls.size() -1); //가장 최근 커밋 이력 url
-        String commitData = getCommitFromUrl(githubLink); //가장 최근 커밋의 내용 json으로 보관
+        List<String> urls = getTodayCommitUrls(githubId).get(0);
+                // 결과를 리스트로 수집합니다;
+        String githubLink = urls.get(0); //가장 최근 커밋 이력 url
+        String apiLink = urls.get(1); //가장 최근 커밋의 내용 json으로 보관
+        String commitData = getCommitFromUrl(apiLink); //가장 최근 커밋의 내용 json으로 보관
         String response = gptService.requestGPT(commitData); //지피티 답변
 
         // ObjectMapper 인스턴스 생성
@@ -153,6 +162,7 @@ public class CommitService {
         JsonNode jsonNode = objectMapper.readTree(response);
         // summary와 code_review 값을 추출
         String title = jsonNode.get("summary").asText();
+
         String description = jsonNode.get("code_review").asText();
 
 
