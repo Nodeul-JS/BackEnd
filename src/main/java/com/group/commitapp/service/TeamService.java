@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,10 +42,12 @@ private final TeamRepository teamRepository;
         User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
         List<findTeamListDTO> dto = user.getMembers()
-                                    .stream().map(Member::getTeam)
+                                    .stream()
+                                    .sorted(Comparator.comparing(Member::getMemberId))
+                                    .map(Member::getTeam)
                                     .map(findTeamListDTO::new)
                                     .toList();
-        System.out.println(dto);
+//        System.out.println(dto);
         return dto;
     }
 
@@ -90,11 +93,10 @@ private final TeamRepository teamRepository;
         // get members of the team
         //find user info by member constructor
         List<findMemberListDTO> members = new ArrayList<>();
-        team.getMembers().forEach(member -> members.add(new findMemberListDTO(member)));
+        team.getMembers()
+                .stream().sorted( Comparator.comparing(Member::getMemberId))
+                .forEach(member -> members.add(new findMemberListDTO(member)));
         return members;
-//        return team.getMembers().stream()
-//                .map(findMemberListDTO::new)
-//                .collect(Collectors.toList());
     }
 
 
