@@ -33,12 +33,15 @@ public class CommitService {
     private final UserRepository userRepository;
 //    private final MemberRepository userRepository;
     private final String accessToken;
+    private GptService gptService;
+
     public CommitService(CommitHistoryRepository commitHistoryRepository
             , UserRepository userRepository
-            ,@Value("${oauth2.user.github.access-token}") String accessToken) {
+            ,@Value("${oauth2.user.github.access-token}") String accessToken, GptService gptService) {
         this.commitHistoryRepository = commitHistoryRepository;
         this.userRepository = userRepository;
         this.accessToken = accessToken;
+        this.gptService = gptService;
     }
 
     public List<String> getTodayCommitUrls(String githubId) throws IOException {
@@ -81,11 +84,16 @@ public class CommitService {
 //                        String repoName = event.get("repo").get("name").asText();
 //                        String sha = event.get("payload").get("head").asText();
 //                        String commitUrl = "https://github.com/" + repoName+ "/commit/" + sha;
-                        commitUrls.add("https://github.com/"
+                        commitUrls.add("https://api.github.com/repos/"
                                 + event.get("repo").get("name").asText()
                                 + "/commit/"
                                 + event.get("payload").get("head").asText()
                         );
+//                        commitUrls.add("https://github.com/"
+//                                + event.get("repo").get("name").asText()
+//                                + "/commit/"
+//                                + event.get("payload").get("head").asText()
+//                        );
 
                     }
                 }
@@ -94,45 +102,62 @@ public class CommitService {
         }
     }
 
-
-
     public List<CommitHistory> getTodayCommitsByGithubId(String githubId) {
         return commitHistoryRepository.findTodayCommitsByGithubId(githubId);
     }
     public List<CommitHistory> getCommitsByGithubId(String githubId) {
         Optional<User> user = userRepository.findByGithubId(githubId);
         Optional.ofNullable(user.orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다.")));
-
-        return commitHistoryRepository.findByUser(user);
+//        return commitHistoryRepository.findByUser(user);
+        return commitHistoryRepository.findByUserOrderByHistoryIdAsc(user);
     }
-
-//    public CommitHistory saveCommitHistory(CommitHistoryDTO dto) {
-//        User user = userRepository.findById(dto.getUserId())
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + dto.getUserId()));
-//
-//        CommitHistory commitHistory = new CommitHistory(dto, user);
-//        return commitHistoryRepository.save(commitHistory);
-//    }
 
 //    @Autowired
 //    private GPTService gptService;
     /**
      * GPT내용 추가 해야함
      * */
+    public String getCommitFromUrl(String url){
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("authorization", "Bearer " + accessToken)
+                .addHeader("Accept", "application/vnd.github.v3+json")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+                .build();
 
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "{}";
+    }
     public CommitHistory addReviewToCommit(String githubId) throws IOException {
         // 커밋 히스토리를 데이터베이스에서 조회합니다.
-//        CommitHistory commitHistory = commitHistoryRepository.findById(commitHistoryId)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid commit history ID: " + commitHistoryId));
-//        System.out.println("githubId: "+githubId);
         User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid github ID: " + githubId));
 
         // GPT API를 호출하여 리뷰를 받습니다.
-//        String review = gptService.getReview(commitHistory.getDescription());
-        String githubLink = getTodayCommitUrls(githubId).get(0);
-        String title = "한줄 요약 제목";
-        String description = githubLink + "의 피드백 내용이 들어갈거임";
+        List<String> urls = getTodayCommitUrls(githubId);
+        String githubLink = urls.get(urls.size() -1); //가장 최근 커밋 이력 url
+        String commitData = getCommitFromUrl(githubLink); //가장 최근 커밋의 내용 json으로 보관
+        String response = gptService.requestGPT(commitData); //지피티 답변
+
+        // ObjectMapper 인스턴스 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        // JSON 문자열을 JsonNode로 파싱
+        JsonNode jsonNode = objectMapper.readTree(response);
+        // summary와 code_review 값을 추출
+        String title = jsonNode.get("summary").asText();
+        String description = jsonNode.get("code_review").asText();
+
+
+//        String title = "한줄 요약 제목";
+//        String description = githubLink + "의 피드백 내용이 들어갈거임";
         //커밋이력은 여러개일수도 있지만, DB에는 1개만 넣는다고 가정할게요
 
         CommitHistory commitHistory = new CommitHistory(

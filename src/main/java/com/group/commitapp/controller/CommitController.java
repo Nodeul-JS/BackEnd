@@ -67,7 +67,7 @@ public class CommitController {
     }
 
     @PostMapping("/todayCommit/{githubId}")
-    @Operation(summary =  "백엔드DB에 커밋 이력 생성", description = "user의 커밋 이력 생성 - 오늘 깃허브 커밋 이력이 있어야함")
+    @Operation(summary =  " AI피드백 요청 &&백엔드DB에 커밋 이력 생성", description = "user의 커밋 이력 생성 - 오늘 깃허브 커밋 이력이 있어야함")
     public ResponseEntity<CommitHistory> addReviewToCommit(@PathVariable String githubId) throws IOException {
 
         CommitHistory updatedCommitHistory = commitService.addReviewToCommit(githubId);
@@ -81,6 +81,7 @@ public class CommitController {
     public List<CommitHistory> getTodayCommits(@PathVariable String githubId) {
         return commitHistoryService.getCommitsByGithubId(githubId);
     }
+
     /*
     @PutMapping("/update/Streak/{userId}")
     @Operation(summary =  "Streak 지급 ", description = "user Streak update")
