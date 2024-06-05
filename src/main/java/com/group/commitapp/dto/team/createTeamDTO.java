@@ -13,14 +13,13 @@ public class createTeamDTO {
     @Schema(description = "팀 이름")
     private String teamName;
 
-    @Schema(description = "팀 인원 수")
-    private int groupNum;
     @Schema(description = "팀 설명")
     private String description;
 
-    @Schema(description = "팀리더(팀 개설자) ID")
-    private long userId;
-
+    @Schema(description = "팀리더(팀 개설자) githubID")
+    private String githubId;
+    @Schema(description = "팀 최대 인원 수")
+    private  int maxMember;
 
 
 }

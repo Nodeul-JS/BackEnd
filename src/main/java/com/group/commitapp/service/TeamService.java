@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,25 +26,37 @@ private final TeamRepository teamRepository;
  private final UserRepository userRepository;
 
 
- @Transactional
-    public List<findTeamListDTO> getTeamsByUserId(Long userId){
-        User user = userRepository.findById(userId)
+// @Transactional
+//    public List<findTeamListDTO> getTeamsByUserId(Long userId){
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
+//        List<Member> members = memberRepository.findAllByUser(user);
+//        List<Team> Teams = members.stream().map(Member::getTeam).toList();
+//        return Teams.stream()
+//                .map(findTeamListDTO::new)// 생성자 참조임 DTO 단에 Team 객체 단일 생성자 필요
+//                .collect(Collectors.toList());
+//    }
+    @Transactional
+    public List<findTeamListDTO> getTeamsByGitgubId(String githubId){
+        User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
-        List<Member> members = memberRepository.findAllByUser(user);
-        List<Team> Teams = members.stream().map(Member::getTeam).collect(Collectors.toList());
-        return Teams.stream()
-                .map(findTeamListDTO::new)// 생성자 참조임 DTO 단에 Team 객체 단일 생성자 필요
-                .collect(Collectors.toList());
+        List<findTeamListDTO> dto = user.getMembers()
+                                    .stream().map(Member::getTeam)
+                                    .map(findTeamListDTO::new)
+                                    .toList();
+        System.out.println(dto);
+        return dto;
     }
 
     @Transactional
-    public void createGroup(createTeamDTO dto){
-        User user = userRepository.findById(dto.getUserId())
+    public Team createGroup(createTeamDTO dto){
+        User user = userRepository.findByGithubId(dto.getGithubId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
         Team team = new Team(dto);
         teamRepository.save(team); // Team Constructor: Protected -> have to use save method(team.set...)
         Member member = new Member(user,team, true);
         memberRepository.save(member);
+        return team;
     }
 
     @Transactional
@@ -76,9 +89,12 @@ private final TeamRepository teamRepository;
                 .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: There is No ID. Here is Service"));
         // get members of the team
         //find user info by member constructor
-        return team.getMembers().stream()
-                .map(findMemberListDTO::new)
-                .collect(Collectors.toList());
+        List<findMemberListDTO> members = new ArrayList<>();
+        team.getMembers().forEach(member -> members.add(new findMemberListDTO(member)));
+        return members;
+//        return team.getMembers().stream()
+//                .map(findMemberListDTO::new)
+//                .collect(Collectors.toList());
     }
 
 

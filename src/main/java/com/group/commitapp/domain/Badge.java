@@ -18,7 +18,8 @@ public class Badge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long badgeId;
     private String name;
-    private Text description;
+    @Lob
+    private String description;
 
 
 }
