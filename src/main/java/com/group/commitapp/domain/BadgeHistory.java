@@ -34,8 +34,6 @@ public class BadgeHistory {
         return badgeHistory;
     }
 
-    private void setUser(User user) {
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
