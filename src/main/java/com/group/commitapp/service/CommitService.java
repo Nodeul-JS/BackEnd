@@ -20,11 +20,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+
 public class CommitService {
 
     private final OkHttpClient httpClient = new OkHttpClient();
@@ -35,14 +37,16 @@ public class CommitService {
 //    private final MemberRepository userRepository;
     private final String accessToken;
     private GptService gptService;
+    private BadgeService badgeService;
 
     public CommitService(CommitHistoryRepository commitHistoryRepository
             , UserRepository userRepository
-            ,@Value("${oauth2.user.github.access-token}") String accessToken, GptService gptService) {
+            ,@Value("${oauth2.user.github.access-token}") String accessToken, GptService gptService , BadgeService badgeService){
         this.commitHistoryRepository = commitHistoryRepository;
         this.userRepository = userRepository;
         this.accessToken = accessToken;
         this.gptService = gptService;
+        this.badgeService = badgeService;
     }
 
     public List<List<String>> getTodayCommitUrls(String githubId) throws IOException {
@@ -113,11 +117,70 @@ public class CommitService {
         return commitHistoryRepository.findTodayCommitsByGithubId(githubId);
     }
     public List<CommitHistory> getCommitsByGithubId(String githubId) {
-        Optional<User> user = userRepository.findByGithubId(githubId);
-        Optional.ofNullable(user.orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다.")));
-//        return commitHistoryRepository.findByUser(user);
+        User user = userRepository.findByGithubId(githubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+
+        // 최근 3일간의 커밋 이력 조회
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(2); // 최근 3일을 확인하려면 2일을 빼야 함
+        Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date end = Date.from(endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        List<CommitHistory> recentCommits = commitHistoryRepository.findByUserAndCreatedAtBetweenOrderByCreatedAtAsc(user, start, end);
+
+        // 커밋이 연속 3일간 있는지 확인
+        boolean hasStreak = checkStreak(recentCommits, 3);
+
+        // 3일 연속 커밋했으면 createStreakBadge 호출
+        if (hasStreak) {
+            Long badgeId = 2L; // 연속 커밋 뱃지 ID
+            badgeService.createStreakBadge(user.getUserId(), badgeId);
+        } else {
+            // 3일간 커밋이 없으면 createDeadBadge 호출
+            boolean hasNoCommitsForThreeDays = checkNoCommits(recentCommits, 3);
+            if (hasNoCommitsForThreeDays) {
+                Long badgeId = 3L; // Dead Badge ID
+                badgeService.createDeadBadge(user.getUserId(), badgeId);
+            }
+        }
+
+        // 전체 커밋 이력을 반환
         return commitHistoryRepository.findByUserOrderByHistoryIdAsc(user);
     }
+
+    private boolean checkStreak(List<CommitHistory> recentCommits, int days) {
+        LocalDate today = LocalDate.now();
+        List<LocalDate> commitDates = recentCommits.stream()
+                .map(commit -> commit.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .distinct()
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < days; i++) {
+            LocalDate dateToCheck = today.minusDays(i);
+            if (!commitDates.contains(dateToCheck)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+        private boolean checkNoCommits(List<CommitHistory> recentCommits, int days) {
+        LocalDate today = LocalDate.now();
+        List<LocalDate> commitDates = recentCommits.stream()
+                .map(commit -> commit.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .distinct()
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < days; i++) {
+            LocalDate dateToCheck = today.minusDays(i);
+            if (commitDates.contains(dateToCheck)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 //    @Autowired
 //    private GPTService gptService;

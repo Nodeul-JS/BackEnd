@@ -45,7 +45,7 @@ public class BadgeController {
     }
 
 
-    @Operation(summary =  "뱃지 단일 조회 ", description = "뱃지 아이디로 뱃지 정보 반환",
+    @Operation(summary =  "뱃지 상세 조회 ", description = "뱃지 아이디로 뱃지 정보 반환",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -59,18 +59,8 @@ public class BadgeController {
         return new Result<>(badgeInfo);
     }
 
-    @PostMapping("/create/{usersId}/{badgeId}")
-    @Operation(summary =  "뱃지 지급 ", description = "사용자에게 뱃지 지급",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "뱃지 지급 성공"
-                    )
-            }
-    )
-    public void createBadge(@PathVariable Long usersId, @PathVariable Long badgeId){
-         badgeService.createBadge(usersId, badgeId);
-    }
+
+
 
 
 

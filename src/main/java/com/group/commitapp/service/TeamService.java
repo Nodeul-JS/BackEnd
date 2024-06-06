@@ -25,6 +25,18 @@ public class TeamService {
 private final TeamRepository teamRepository;
  private final MemberRepository memberRepository;
  private final UserRepository userRepository;
+ private final BadgeService badgeService;
+
+    @Transactional
+    public List<findTeamListDTO> getTeamsByUserId(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
+        List<Member> members = memberRepository.findAllByUser(user);
+        List<Team> Teams = members.stream().map(Member::getTeam).toList();
+        return Teams.stream()
+                .map(findTeamListDTO::new)// 생성자 참조임 DTO 단에 Team 객체 단일 생성자 필요
+                .collect(Collectors.toList());
+    }
 
 
 // @Transactional
@@ -59,6 +71,8 @@ private final TeamRepository teamRepository;
         teamRepository.save(team); // Team Constructor: Protected -> have to use save method(team.set...)
         Member member = new Member(user,team, true);
         memberRepository.save(member);
+
+        badgeService.createLeaderBadge(user , 1L); // 그룹 리더 뱃지 Id = 1
         return team;
     }
 
