@@ -41,18 +41,25 @@ public class GptService {
 
     //    }
     public String requestGPT(String prompt) {
-        prompt = "다음 커밋 정보를 보고 , {summary:, code_review:}과 같은 json형식으로 한국어로 작성해줘, 무조건 json으로만 해야해." +
-                " summary는 한줄의 명사형으로 끝나야해. code_review 300자 내외로 코드리뷰와 개선점을 종결형으로 작성해줘"
-                + prompt;
+//        System.out.println("requestGPT진입");
+//        prompt = "다음 커밋 정보json을 보고 코드리뷰를 작성해줘 , 반드시 {summary:, code_review:}과 같은 json형식으로 한국어로 작성해줘, 무조건 json으로만 해야해." +
+//                " summary는 한줄의 명사형으로 끝나야해. code_review는 300자 내외로 코드리뷰와 칭찬할점,개선점을 반드시 포함해서 종결형으로 작성해줘"
+//                + prompt;
+        prompt = "다음 커밋 정보 JSON을 보고 코드리뷰를 작성해주세요." +
+                " 코드리뷰는 {\"summary\": string, \"code_review\": string }와 같은 json형식으로 한국어로 작성해주세요." +
+                " summary는 한 줄의 명사형으로 끝나야 하며, code_review에는 칭찬할 점과 개선점을 반드시 포함해주세요." +
+                " 개선점은 코드의 가독성, 성능, 유지보수 용이성 등에 관한 구체적인 제안이 되어야 합니다."+
+                prompt;
 
         GPTRequest request = new GPTRequest(
-                model, prompt, 1, 256, 1, 2, 2);
+                model, prompt, 0.2, 256, 0.8, 0.2,    0.1);
         GPTResponse gptResponse = restTemplate.postForObject(
                 apiUrl
                 , request
                 , GPTResponse.class
         );
 
+//        System.out.println("requestGPT탈출");
         return gptResponse.getChoices().get(0).getMessage().getContent();
     }
 }

@@ -153,9 +153,11 @@ public class CommitService {
                 // 결과를 리스트로 수집합니다;
         String githubLink = urls.get(0); //가장 최근 커밋 이력 url
         String apiLink = urls.get(1); //가장 최근 커밋의 내용 json으로 보관
+        System.out.println("githubLink: "+githubLink);
+        System.out.println("apiLink: "+apiLink);
         String commitData = getCommitFromUrl(apiLink); //가장 최근 커밋의 내용 json으로 보관
         String response = gptService.requestGPT(commitData); //지피티 답변
-
+//        String response = gptService.requestGPT(apiLink); //지피티 답변
         // ObjectMapper 인스턴스 생성
         ObjectMapper objectMapper = new ObjectMapper();
         // JSON 문자열을 JsonNode로 파싱
@@ -164,8 +166,9 @@ public class CommitService {
         String title = jsonNode.get("summary").asText();
 
         String description = jsonNode.get("code_review").asText();
-
-
+        System.out.println("json : " + jsonNode);
+//        System.out.println("title: "+title);
+//        System.out.println("description: "+description);
 //        String title = "한줄 요약 제목";
 //        String description = githubLink + "의 피드백 내용이 들어갈거임";
         //커밋이력은 여러개일수도 있지만, DB에는 1개만 넣는다고 가정할게요
@@ -177,6 +180,20 @@ public class CommitService {
 
         // 커밋 히스토리에 리뷰를 추가합니다.
         // 변경 사항을 데이터베이스에 저장합니다.
+        return commitHistoryRepository.save(commitHistory);
+    }
+
+
+    public CommitHistory addGoodToCommit(Long historyId) {
+        CommitHistory commitHistory = commitHistoryRepository.findById(historyId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
+        commitHistory.setGood(commitHistory.getGood() + 1);
+        return commitHistoryRepository.save(commitHistory);
+    }
+    public CommitHistory addBadToCommit(Long historyId) {
+        CommitHistory commitHistory = commitHistoryRepository.findById(historyId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
+        commitHistory.setBad(commitHistory.getBad() + 1);
         return commitHistoryRepository.save(commitHistory);
     }
 }

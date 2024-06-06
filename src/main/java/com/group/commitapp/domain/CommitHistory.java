@@ -19,6 +19,7 @@ public class CommitHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
     private String title;
+    @Lob
     private String description;
 //    private String askGpt;
 //    private Boolean isCommit;

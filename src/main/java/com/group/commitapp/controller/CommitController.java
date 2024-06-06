@@ -86,6 +86,20 @@ public class CommitController {
         return commitHistoryService.getCommitsByGithubId(githubId);
     }
 
+
+    @PostMapping("/good/{historyId}")
+    @Operation(summary =  "해당 커밋의 좋아요버튼 숫자 1증가", description = "해당 historyId커밋의 좋아요 값 1 증가")
+    public ResponseEntity<ApiResponse<Integer>> addGoodToCommit(@PathVariable long historyId) throws IOException {
+        int goodValue = commitService.addGoodToCommit(historyId).getGood();
+        return ResponseEntity.ok().body(ApiResponse.createSuccess(goodValue, CustomResponseStatus.SUCCESS));
+    }
+    @PostMapping("/bad/{historyId}")
+    @Operation(summary =  "해당 커밋의 싫어요버튼 숫자1 증가", description = "해당 historyId커밋의 싫어요 값 1 증가")
+    public ResponseEntity<ApiResponse<Integer>> addBadToCommit(@PathVariable long historyId) throws IOException {
+        int badValue = commitService.addBadToCommit(historyId).getBad();
+        return ResponseEntity.ok().body(ApiResponse.createSuccess(badValue, CustomResponseStatus.SUCCESS));
+    }
+
     /*
     @PutMapping("/update/Streak/{userId}")
     @Operation(summary =  "Streak 지급 ", description = "user Streak update")
@@ -99,5 +113,6 @@ public class CommitController {
         return new Result<>("updateFreezeDTO here");
     }
 */
+
 
 }
