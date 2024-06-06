@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.swing.text.html.Option;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +16,8 @@ public interface CommitHistoryRepository extends JpaRepository<CommitHistory, Lo
     List<CommitHistory> findTodayCommitsByGithubId(@Param("githubId") String githubId);
     List<CommitHistory> findByUser(Optional<User> user);
     List<CommitHistory> findByUserOrderByHistoryIdAsc(Optional<User> user);
+    List<CommitHistory> findByUserOrderByHistoryIdAsc(User user);
+
+    List<CommitHistory> findByUserAndCreatedAtBetweenOrderByCreatedAtAsc(User user, Date start, Date end);
+
 }
