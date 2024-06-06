@@ -18,12 +18,14 @@ import org.w3c.dom.Text;
 @Getter
 public class findBadgeListDTO {
     public findBadgeListDTO(Badge badge, BadgeHistory badgeHistory) {
+        this.badgeId = badge.getBadgeId();
         this.badgeName = badge.getName();
         this.description = badge.getDescription();
         this.createdAt = badgeHistory.getCreatedAt().toString();
-
     }
 
+    @Schema(description = "뱃지 ID")
+    private Long badgeId;
     @Schema(description = "뱃지 이름")
     private String badgeName;
 

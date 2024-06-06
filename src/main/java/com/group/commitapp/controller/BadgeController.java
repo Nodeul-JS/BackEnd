@@ -33,14 +33,14 @@ public class BadgeController {
     }
 
     ///여기서 부터 api 작성
-    @GetMapping("/myBadge/{githubId}")
+    @GetMapping("/myBadgeList/{githubId}")
     @Operation(summary =  "My 뱃지 전체 조회 ", description = "사용자가 가진 뱃지 정보 반환",
             responses = {
                     @ApiResponse(description = "조회된 뱃지 정보를 반환함.")
             }
     )
-    public Result<List<findBadgeListDTO>> findBadgeList(@PathVariable Long usersId){
-        List<findBadgeListDTO> DTOList = badgeService.findBadgeList(usersId);
+    public Result<List<findBadgeListDTO>> findBadgeList(@PathVariable String githubId){
+        List<findBadgeListDTO> DTOList = badgeService.findBadgeList(githubId);
         return new Result<>(DTOList);
     }
 

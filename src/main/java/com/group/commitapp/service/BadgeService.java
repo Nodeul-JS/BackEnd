@@ -26,9 +26,9 @@ private final UserRepository userRepository;
 
 
     @Transactional
-    public List<findBadgeListDTO> findBadgeList(Long usersId) { // 변수명 오류 수정: usersid -> usersId
+    public List<findBadgeListDTO> findBadgeList(String githubId) { // 변수명 오류 수정: usersid -> usersId
         // 사용자 정보 조회
-        User user = userRepository.findById(usersId)
+        User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
 
         // 사용자의 뱃지 기록 조회
@@ -37,7 +37,7 @@ private final UserRepository userRepository;
         // 뱃지 기록에 해당하는 뱃지들을 조회하고 DTO 리스트로 변환
         List<findBadgeListDTO> badgeDTOs = new ArrayList<>();
         for (BadgeHistory badgeHistory : badgeHistories) {
-            Badge badge = badgeRepository.findById(badgeHistory.getRewardId())
+            Badge badge = badgeRepository.findById(badgeHistory.getBadge().getBadgeId())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid reward ID: Badge not found. Here is Service"));
             badgeDTOs.add(new findBadgeListDTO(badge, badgeHistory));
         }
