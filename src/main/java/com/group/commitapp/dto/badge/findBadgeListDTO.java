@@ -16,6 +16,7 @@ import org.w3c.dom.Text;
         "descrip,\n" +
         "createdAt]")
 @Getter
+@AllArgsConstructor
 public class findBadgeListDTO {
     public findBadgeListDTO(Badge badge, BadgeHistory badgeHistory) {
         this.badgeName = badge.getName();

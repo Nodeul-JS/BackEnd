@@ -52,7 +52,6 @@ private final UserRepository userRepository;
         Badge badge = badgeRepository.findById(badgeId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
         return new findBadgeDTO(badge);
-
     }
 
     @Transactional
