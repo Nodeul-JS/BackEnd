@@ -57,9 +57,12 @@ private final UserRepository userRepository;
 
     @Transactional
     public void createLeaderBadge(User user, Long badgeId) {
-
         Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
                 .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
+
+        if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
+            return;
+        }
 
         // Create and save BadgeHistory
         BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
@@ -73,7 +76,9 @@ private final UserRepository userRepository;
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
         Badge badge = badgeRepository.findById(badgeId) // 연속 커밋 뱃지 Id = 2
                 .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
-
+        if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
+            return;
+        }
         // Create and save BadgeHistory
         BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
         badgeHistoryRepository.save(badgeHistory);
@@ -86,7 +91,9 @@ private final UserRepository userRepository;
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
         Badge badge = badgeRepository.findById(badgeId) // Dead Badge ID :3
                 .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
-
+        if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
+            return;
+        }
         // Create and save BadgeHistory
         BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
         badgeHistoryRepository.save(badgeHistory);
