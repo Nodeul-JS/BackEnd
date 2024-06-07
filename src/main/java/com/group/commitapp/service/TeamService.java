@@ -53,14 +53,12 @@ private final TeamRepository teamRepository;
     public List<findTeamListDTO> getTeamsByGitgubId(String githubId){
         User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
-        List<findTeamListDTO> dto = user.getMembers()
+        return user.getMembers()
                                     .stream()
                                     .sorted(Comparator.comparing(Member::getMemberId))
                                     .map(Member::getTeam)
                                     .map(findTeamListDTO::new)
                                     .toList();
-//        System.out.println(dto);
-        return dto;
     }
 
     @Transactional
