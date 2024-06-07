@@ -4,6 +4,7 @@ package com.group.commitapp.controller;
 import com.group.commitapp.dto.gpt.GPTRequest;
 import com.group.commitapp.dto.gpt.GPTResponse;
 import com.group.commitapp.service.GptService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 @RestController
+@Tag(name = "Chat-GPT", description = "GPT-4o Chat API")
 @RequestMapping("/gpt")
 @RequiredArgsConstructor
 public class GPTController {
@@ -38,6 +40,7 @@ public class GPTController {
 
 
     @PostMapping("/chat")
+    @Operation(summary =  "GPT프롬프팅 답변 테스트 디버깅용", description = "GPT-4o Chat")
     public String chat(@RequestBody String prompt){
         return gptService.requestGPT(prompt);
 //        return gptResponse.getChoices().get(0).getMessage().getContent();

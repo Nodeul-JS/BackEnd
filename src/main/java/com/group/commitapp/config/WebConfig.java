@@ -15,6 +15,8 @@ public class WebConfig {
             @Override
             public void addCorsMappings(@NotNull CorsRegistry registry) {
                 registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedOrigins("https://commit-js-one.vercel.app")
                         .allowedOriginPatterns("*", "http://localhost:3000", "http://localhost:8080")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
                         .allowCredentials(true)

@@ -46,9 +46,10 @@ public class GptService {
 //                " summary는 한줄의 명사형으로 끝나야해. code_review는 300자 내외로 코드리뷰와 칭찬할점,개선점을 반드시 포함해서 종결형으로 작성해줘"
 //                + prompt;
         prompt = "다음 커밋 정보 JSON을 보고 코드리뷰를 작성해주세요." +
-                " 코드리뷰는 {\"summary\": string, \"code_review\": string }와 같은 json형식으로 한국어로 작성해주세요." +
+                " 코드리뷰는 반드시 {\"summary\": string, \"code_review\": string }의 json형식만으로 한국어로 작성해주세요." +
                 " summary는 한 줄의 명사형으로 끝나야 하며, code_review에는 칭찬할 점과 개선점을 반드시 포함해주세요." +
                 " 개선점은 코드의 가독성, 성능, 유지보수 용이성 등에 관한 구체적인 제안이 되어야 합니다."+
+                "code_review부분은 최대 300자로 제한해주세요"+
                 prompt;
 
         GPTRequest request = new GPTRequest(

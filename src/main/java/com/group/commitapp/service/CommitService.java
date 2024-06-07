@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group.commitapp.domain.CommitHistory;
 import com.group.commitapp.domain.User;
 import com.group.commitapp.dto.commit.CommitHistoryDTO;
-import com.group.commitapp.dto.commit.CommitReviewDTO;
 import com.group.commitapp.repository.CommitHistoryRepository;
 import com.group.commitapp.repository.UserRepository;
 import okhttp3.OkHttpClient;
@@ -22,9 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+import java.util.regex.Matcher;
 @Service
 
 public class CommitService {
@@ -36,17 +35,19 @@ public class CommitService {
     private final UserRepository userRepository;
 //    private final MemberRepository userRepository;
     private final String accessToken;
+    private final UserService userService;
     private GptService gptService;
     private BadgeService badgeService;
 
     public CommitService(CommitHistoryRepository commitHistoryRepository
             , UserRepository userRepository
-            ,@Value("${oauth2.user.github.access-token}") String accessToken, GptService gptService , BadgeService badgeService){
+            , @Value("${oauth2.user.github.access-token}") String accessToken, GptService gptService , BadgeService badgeService, UserService userService){
         this.commitHistoryRepository = commitHistoryRepository;
         this.userRepository = userRepository;
         this.accessToken = accessToken;
         this.gptService = gptService;
         this.badgeService = badgeService;
+        this.userService = userService;
     }
 
     public List<List<String>> getTodayCommitUrls(String githubId) throws IOException {
@@ -218,10 +219,19 @@ public class CommitService {
         String apiLink = urls.get(1); //가장 최근 커밋의 내용 json으로 보관
         System.out.println("githubLink: "+githubLink);
         System.out.println("apiLink: "+apiLink);
+
         String commitData = getCommitFromUrl(apiLink); //가장 최근 커밋의 내용 json으로 보관
         String response = gptService.requestGPT(commitData); //지피티 답변
 //        String response = gptService.requestGPT(apiLink); //지피티 답변
         // ObjectMapper 인스턴스 생성
+        Pattern pattern = Pattern.compile("\\{.*\\}", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(response);
+
+        if (matcher.find()) {
+            response = matcher.group();
+
+        }
+        System.out.println("response: "+response);
         ObjectMapper objectMapper = new ObjectMapper();
         // JSON 문자열을 JsonNode로 파싱
         JsonNode jsonNode = objectMapper.readTree(response);
@@ -240,6 +250,8 @@ public class CommitService {
                 new CommitHistoryDTO(title, description, githubLink, githubId)
                 , user
         );
+        userService.giveExperienceByUser(user);
+        userRepository.save(user);
 
         // 커밋 히스토리에 리뷰를 추가합니다.
         // 변경 사항을 데이터베이스에 저장합니다.

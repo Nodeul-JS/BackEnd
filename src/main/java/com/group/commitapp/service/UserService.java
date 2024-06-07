@@ -17,4 +17,14 @@ public class UserService {
         return userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
     }
+
+    public User giveExperienceByUser(User user) {
+        int experience = user.getExperience() + 9;
+        if(experience >= 10) {
+            user.setLevel(user.getLevel() + 1);
+            experience -= 10;
+        }
+        user.setExperience(experience);
+        return user;
+    }
 }
