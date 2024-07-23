@@ -7,8 +7,14 @@
 ## 개발환경 & 기술
 - JDK17
 - SpringBoot 3
-- JPA : Hibernate
+- DataBase
+  - MySQL
+  - JPA : Hibernate
 - SpringDoc : SwaggerUI
-- MySQL
-- GitHub API
-- Chat GPT API
+- OAuth2.0 : GitHub
+- External API
+  - GitHub API
+  - ChatGPT API
+- Infra
+  - AWS EC2
+  - AWS RDS
