@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: local  # 기본적으로 local 환경을 활성화
+jwt:
+  secret: ${JWT_SECRET_KEY}
+
+oauth2:
+  user:
+    github:
+      client-id: ${GITHUB_CLIENT_ID}
+      client-secret: ${GITHUB_CLIENT_SECRET}
+      login-url: https://github.com/login/oauth/authorize
+      redirect-url: http://localhost:8080/api/login/oauth
+      token-url: https://github.com/login/oauth/access_token
+      user-url: https://api.github.com/user
+      access-token: ${ACCESS_TOKEN}
+
+gpt:
+  model: gpt-4o
+  api:
+    key: ${GPT_API_KEY}
+    url: "https://api.openai.com/v1/chat/completions"
