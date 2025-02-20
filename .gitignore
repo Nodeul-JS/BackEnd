@@ -4,11 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-*.yml/
-*.yml
-.yml/
-*.yaml/
-application.yml
+#*.yml/
+#*.yml
+#.yml/
+#*.yaml/
+#application.yml
 ### STS ###
 .apt_generated
 .classpath
@@ -29,11 +29,11 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-*.yml/
-*.yml
-.yml/
-*.yaml/
-application.yml
+#*.yml/
+#*.yml
+#.yml/
+#*.yaml/
+#application.yml
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -43,3 +43,6 @@ application.yml
 
 ### VS Code ###
 .vscode/
+
+### dotenv ###
+*.env
