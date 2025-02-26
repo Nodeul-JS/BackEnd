@@ -27,7 +27,15 @@ jobs:
       - name: Find JAR File
         id: get_jar
         run: echo "JAR_FILE=$(ls build/libs/*.jar | head -n 1)" >> $GITHUB_ENV
-
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "SSH Connection Successful!"
+            uname -a
       - name: Transfer JAR to EC2
         uses: appleboy/scp-action@master
         with:
