@@ -22,10 +22,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
 
     @Operation(summary =  "user정보 조회", description = "githubId로 user정보 조회")
     @GetMapping("/mypage/{githubId}")
