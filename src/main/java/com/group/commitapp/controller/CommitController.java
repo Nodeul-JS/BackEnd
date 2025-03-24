@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CommitController {
     private final CommitService commitService;
-    private CommitService commitHistoryService;
 
     @Data
     @AllArgsConstructor
@@ -36,24 +35,16 @@ public class CommitController {
 
 
     @GetMapping("/commitStatus/{githubId}")
-    @Operation(summary =  "오늘 깃허브 커밋 이력 (3가지 상태)", description = "user의 오늘 깃허브 커밋 이력 조회 {commitNotYet, AINotYet, commitDone} 없으면 null, 500에러 반환")
-    public ResponseEntity<ApiResponse<String>> getWhetherCommitToday(@PathVariable String githubId) {
+    @Operation(summary =  "오늘 깃허브 커밋 상태 조회", description = "commitNotYet, AINotYet, commitDone 중 하나 반환")
+    public ResponseEntity<ApiResponse<String>> getCommitStatus(@PathVariable String githubId) {
         try {
-//            List<String> commitUrls = gitHubService.getTodayCommitUrls(githubId);
-            if(commitService.getTodayCommitUrls(githubId).isEmpty()){
-                return ResponseEntity.ok().body(ApiResponse.createSuccess("commitNotYet", CustomResponseStatus.SUCCESS));
-            }
-//            List<CommitHistory> commitHistories = commitHistoryService.getTodayCommitsByGithubId(githubId);
-            if(commitHistoryService.getTodayCommitsByGithubId(githubId).isEmpty()){
-                return ResponseEntity.ok().body(ApiResponse.createSuccess("AINotYet", CustomResponseStatus.SUCCESS));
-            }
-            return ResponseEntity.ok().body(ApiResponse.createSuccess("commitDone", CustomResponseStatus.SUCCESS));
-//            return ResponseEntity.ok("commitDone");
+            String commitStatus = commitService.getCommitStatusForToday(githubId);
+            return ResponseEntity.ok(ApiResponse.createSuccess(commitStatus, CustomResponseStatus.SUCCESS));
         } catch (IOException e) {
-                return ResponseEntity.ok().body(ApiResponse.createError(CustomResponseStatus.MEMBER_NOT_FOUND));
-
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.createError(CustomResponseStatus.INTERNAL_SERVER_ERROR));
         }
     }
+
 
     @GetMapping("/todayCommit/{githubId}")
     @Operation(summary =  "오늘자 깃허브 커밋 url리스트 반환(디버깅용임)", description = "user의 오늘 깃허브 커밋 이력 조회, 없으면 null, 아니면 500에러 반환")
@@ -83,7 +74,7 @@ public class CommitController {
     @GetMapping("/commitHistory/{githubId}")
     @Operation(summary =  "역대 모든 커밋히스토리(백엔드DB에 있는거) 조회", description = "user의 모든 커밋 이력 조회")
     public List<CommitHistory> getTodayCommits(@PathVariable String githubId) {
-        return commitHistoryService.getCommitsByGithubId(githubId);
+        return commitService.getCommitsByGithubId(githubId);
     }
 
 

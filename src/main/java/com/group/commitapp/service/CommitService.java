@@ -50,6 +50,8 @@ public class CommitService {
         this.userService = userService;
     }
 
+
+
     public List<List<String>> getTodayCommitUrls(String githubId) throws IOException {
         String url = "https://api.github.com/users/" + githubId + "/events";
         System.out.println("url: "+url);
@@ -270,5 +272,15 @@ public class CommitService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
         commitHistory.setBad(commitHistory.getBad() + 1);
         return commitHistoryRepository.save(commitHistory);
+    }
+
+    public String getCommitStatusForToday(String githubId) throws IOException {
+        if (getTodayCommitUrls(githubId).isEmpty()) {
+            return "commitNotYet";
+        }
+        if (getTodayCommitsByGithubId(githubId).isEmpty()) {
+            return "AINotYet";
+        }
+        return "commitDone";
     }
 }
