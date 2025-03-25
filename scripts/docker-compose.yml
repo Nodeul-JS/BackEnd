@@ -5,7 +5,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_PASSWORD: root
-      MYSQL_DATABASE: planfit
+      MYSQL_DATABASE: cap
       MYSQL_USER: user
       MYSQL_ROOT_HOST: '%'
     ports:
