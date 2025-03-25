@@ -1,6 +1,8 @@
 package com.group.commitapp.service;
 
 
+import com.group.commitapp.common.enums.CustomResponseStatus;
+import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.Member;
 import com.group.commitapp.domain.Team;
 import com.group.commitapp.domain.User;
@@ -63,8 +65,10 @@ private final TeamRepository teamRepository;
 
     @Transactional
     public Team createGroup(createTeamDTO dto){
+//        System.out.println("dto: "+dto);
         User user = userRepository.findByGithubId(dto.getGithubId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
+//        System.out.println("user: "+user);
         Team team = new Team(dto);
         teamRepository.save(team); // Team Constructor: Protected -> have to use save method(team.set...)
         Member member = new Member(user,team, true);
@@ -101,7 +105,7 @@ private final TeamRepository teamRepository;
     public List<findMemberListDTO> getMemberListByTeamId(Long teamId) {
         // find Team by teamId
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: There is No ID. Here is Service"));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.TEAM_NOT_FOUND));
         // get members of the team
         //find user info by member constructor
         List<findMemberListDTO> members = new ArrayList<>();
