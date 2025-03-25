@@ -27,15 +27,9 @@ public class UserController {
     @GetMapping("/mypage/{githubId}")
     public ResponseEntity<ApiResponse<UserInfoDTO>> getUserByGithubId(@PathVariable String githubId) {
         UserInfoDTO userInfoDTO = new UserInfoDTO(userService.getUserByGithubId(githubId));
-        return ResponseEntity.ok()
-                .body(ApiResponse.createSuccess(userInfoDTO, CustomResponseStatus.SUCCESS));
+        return ResponseEntity.ok().body(ApiResponse.createSuccess(userInfoDTO, CustomResponseStatus.SUCCESS));
     }
 
-//    @Operation(summary =  "가입한 팀 조회 ", description = "사용자가 속한 팀 리스트 정보 반환")
-//    @GetMapping("/myTeamList/{userId}")
-//    public Result<List<findTeamListDTO>> findGroup(@PathVariable Long userId){
-//        return new Result<>(teamService.getTeamsByUserId(userId));
-//    }
 
 
 }

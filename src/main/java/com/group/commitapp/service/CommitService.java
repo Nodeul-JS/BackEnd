@@ -2,6 +2,8 @@ package com.group.commitapp.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group.commitapp.common.enums.CustomResponseStatus;
+import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.CommitHistory;
 import com.group.commitapp.domain.User;
 import com.group.commitapp.dto.commit.CommitHistoryDTO;
@@ -36,8 +38,8 @@ public class CommitService {
 //    private final MemberRepository userRepository;
     private final String accessToken;
     private final UserService userService;
-    private GptService gptService;
-    private BadgeService badgeService;
+    private final GptService gptService;
+    private final BadgeService badgeService;
 
     public CommitService(CommitHistoryRepository commitHistoryRepository
             , UserRepository userRepository
@@ -49,6 +51,8 @@ public class CommitService {
         this.badgeService = badgeService;
         this.userService = userService;
     }
+
+
 
     public List<List<String>> getTodayCommitUrls(String githubId) throws IOException {
         String url = "https://api.github.com/users/" + githubId + "/events";
@@ -270,5 +274,27 @@ public class CommitService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
         commitHistory.setBad(commitHistory.getBad() + 1);
         return commitHistoryRepository.save(commitHistory);
+    }
+
+    public String getCommitStatusForToday(String githubId) throws IOException {
+        //먼저 해당 사용자가 존재하는지 확인
+        if (userRepository.findByGithubId(githubId).isEmpty()) {
+            throw new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND);
+        }
+        if (getTodayCommitUrls(githubId).isEmpty()) {
+            return "commitNotYet";
+        }
+        if (getTodayCommitsByGithubId(githubId).isEmpty()) {
+            return "AINotYet";
+        }
+        return "commitDone";
+    }
+
+    // 테스트용 메서드
+    public List<String> getTodayCommitUrlsForTest(String githubId) throws IOException {
+        return getTodayCommitUrls(githubId).stream()
+                .filter(urlList -> !urlList.isEmpty())
+                .map(urlList -> urlList.get(0))
+                .collect(Collectors.toList());
     }
 }

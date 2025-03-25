@@ -3,7 +3,6 @@ package com.group.commitapp.controller;
 
 import com.group.commitapp.common.dto.ApiResponse;
 import com.group.commitapp.common.enums.CustomResponseStatus;
-import com.group.commitapp.domain.Member;
 import com.group.commitapp.domain.Team;
 import com.group.commitapp.dto.team.createTeamDTO;
 import com.group.commitapp.dto.team.findTeamListDTO;
@@ -59,7 +58,6 @@ public class TeamController {
         return ResponseEntity.ok(ApiResponse.createSuccess(null, CustomResponseStatus.SUCCESS));
     }
 
-    //@ApiOperation(value = "해당 그룹의 그룹원들 출력 ", notes = " api/group/{groupId}")
     @Operation(description = "해당 팀의 팀원들 출력" , summary = "해당 팀의 팀원들 출력")
     @GetMapping("/memberList/{teamId}")
     public ResponseEntity<ApiResponse<List<findMemberListDTO>>> findGroupMembers(@PathVariable Long teamId){
@@ -68,7 +66,6 @@ public class TeamController {
     }
 
 
-    //@ApiOperation(value = "그룹 삭제", notes = "api/group")
     @Operation(description = "해당 team id의 그룹 삭제 " , summary = "그룹 삭제")
     @DeleteMapping("/{teamId}")
     public ResponseEntity<ApiResponse<Void>> deleteGroup(@PathVariable Long teamId){

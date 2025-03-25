@@ -1,5 +1,7 @@
 package com.group.commitapp.service;
 
+import com.group.commitapp.common.enums.CustomResponseStatus;
+import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.Badge;
 import com.group.commitapp.domain.BadgeHistory;
 import com.group.commitapp.domain.User;
@@ -11,11 +13,9 @@ import com.group.commitapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +49,8 @@ private final UserRepository userRepository;
     @Transactional
     public findBadgeDTO findBadge(Long badgeId) // find one!! Badge
     {
-        Badge badge = badgeRepository.findById(badgeId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
+        Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
         return new findBadgeDTO(badge);
 
     }
@@ -58,8 +58,9 @@ private final UserRepository userRepository;
     @Transactional
     public void createLeaderBadge(User user, Long badgeId) {
         Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
-                .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
 
+        //이미 뱃지를 받은 이력이 있으면
         if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
             return;
         }
