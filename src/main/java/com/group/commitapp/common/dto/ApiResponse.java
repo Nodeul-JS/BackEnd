@@ -63,4 +63,7 @@ public class ApiResponse<T> {
     public static ApiResponse<String> createError(CustomResponseStatus status) {
         return new ApiResponse<>(status.getHttpStatusCode(), status.getCode(), status.getMessage(), null);
     }
+    public static <T> ApiResponse<T> createError(CustomResponseStatus status, T data) {
+        return new ApiResponse<>(status.getHttpStatusCode(), status.getCode(), status.getMessage(), data);
+    }
 }
