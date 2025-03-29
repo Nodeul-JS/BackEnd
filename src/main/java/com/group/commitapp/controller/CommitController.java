@@ -38,10 +38,10 @@ public class CommitController {
 
     //테스트 디버깅용
     @GetMapping("/todayCommit/{githubId}")
-    @Operation(summary =  "오늘자 깃허브 커밋 url리스트 반환(디버깅용임)", description = "user의 오늘 깃허브 커밋 이력 조회, 없으면 null, 아니면 500에러 반환")
-    public ResponseEntity<List<String>> getTodayCommitUrls(@PathVariable String githubId) throws IOException {
+    @Operation(summary =  "오늘자 깃허브 커밋 url리스트 반환(디버깅용임)", description = "user의 오늘 깃허브 커밋 이력 조회")
+    public ResponseEntity<ApiResponse<List<String>>> getTodayCommitUrls(@PathVariable String githubId) throws IOException {
         List<String> commitUrls = commitService.getTodayCommitUrlsForTest(githubId);
-        return ResponseEntity.ok(commitUrls);
+        return ResponseEntity.ok(ApiResponse.createSuccess(commitUrls, CustomResponseStatus.SUCCESS));
     }
 
 
@@ -54,8 +54,9 @@ public class CommitController {
 
     @GetMapping("/commitHistory/{githubId}")
     @Operation(summary =  "역대 모든 커밋히스토리(백엔드DB에 있는거) 조회", description = "user의 모든 커밋 이력 조회")
-    public List<CommitHistory> getTodayCommits(@PathVariable String githubId) {
-        return commitService.getCommitsByGithubId(githubId);
+    public ResponseEntity<ApiResponse<List<CommitHistory>>> getTodayCommits(@PathVariable String githubId) {
+        List<CommitHistory> commitHistories = commitService.getCommitsByGithubId(githubId);
+        return ResponseEntity.ok(ApiResponse.createSuccess(commitHistories, CustomResponseStatus.SUCCESS));
     }
 
 

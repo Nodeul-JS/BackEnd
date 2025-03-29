@@ -29,11 +29,15 @@ class CommitServiceTest {
     @Mock UserService userService;
 
     // 실제 HTTP 호출이 일어나므로 여기선 통합성 있는 테스트
+    // 단위테스트 FIRST 원칙에 어긋남
+    // 추후 수정 필요
     CommitService commitService;
 
     @BeforeEach
     void setUp() {
-        String accessToken = "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"; // 진짜 또는 테스트용 토큰
+        String accessToken = System.getenv("ACCESS_TOKEN");
+        assertNotNull(accessToken);
+        System.out.println("accessToken: " + accessToken);
         commitService = new CommitService(
                 commitHistoryRepository,
                 userRepository,

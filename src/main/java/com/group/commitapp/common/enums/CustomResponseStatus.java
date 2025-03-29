@@ -37,6 +37,8 @@ public enum CustomResponseStatus {
     BADGE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "4005", "해당 뱃지를 찾을 수 없습니다."),
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "4006", "해당 팀을 찾을 수 없습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED.value(), "4007", "허용되지 않은 요청 방식입니다."),
+    GITHUB_USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "4008", "해당 GitHub 사용자를 찾을 수 없습니다."),
+    GITHUB_API_ERROR(HttpStatus.BAD_GATEWAY.value(), "4009", "GitHub API 호출에 실패했습니다."),
 //    MAP_VALUE_NOT_EXIST(HttpStatus.NOT_FOUND.value(), "4005", "채팅이 존재하지 않습니다. 채팅을 새롭게 시작해주세요."),
 //    EVALUATION_SERVER_NOT_ANSWER(HttpStatus.NOT_FOUND.value(), "4006", "평가서버가 응답하지 않습니다."),
 //    CS_CHAT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "4007", "해당 CS 채팅이 존재하지 않습니다."),

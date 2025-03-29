@@ -53,66 +53,43 @@ public class CommitService {
     }
 
 
-
     public List<List<String>> getTodayCommitUrls(String githubId) throws IOException {
         String url = "https://api.github.com/users/" + githubId + "/events";
-        System.out.println("url: "+url);
-//        System.out.println(accessToken);
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("authorization","Bearer " + accessToken)
+                .addHeader("Authorization", "Bearer " + accessToken)
                 .addHeader("Accept", "application/vnd.github.v3+json")
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+                .addHeader("User-Agent", "CommitAppService")
                 .build();
 
-
         try (Response response = httpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
+            if(response.code() == 404){ //해당 깃허브 id가 없을떄
+                throw new CustomException(CustomResponseStatus.GITHUB_USER_NOT_FOUND);
+            }
+            if (!response.isSuccessful()) { //깃허브 API호출 실패
+                throw new CustomException(CustomResponseStatus.GITHUB_API_ERROR);
             }
 
-            assert response.body() != null;
             JsonNode events = objectMapper.readTree(response.body().string());
             List<List<String>> urls = new ArrayList<>();
-            LocalDate today = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
-//            System.out.println("today: "+today.format(formatter));
             for (JsonNode event : events) {
-                if (event.get("type").asText().equals("PushEvent")) { //푸쉬만 가져오기
-//                    String eventDate = event.get("created_at").asText().substring(0, 10);
-                    // "created_at" 값을 가져옴
-                    String utcDateStr = event.get("created_at").asText();
-                    // UTC 날짜를 ZonedDateTime으로 변환
-                    ZonedDateTime utcDate = ZonedDateTime.parse(utcDateStr);
-                    // KST 시간대로 변환
-                    ZonedDateTime kstDate = utcDate.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-                    // 날짜 부분만 추출하여 문자열로 변환
-                    String eventDate = kstDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    // 날짜 부분만 추출하여 문자열로 변환
-                        String repoName = event.get("repo").get("name").asText();
-                        String sha = event.get("payload").get("head").asText();
-                        String commitUrl = "https://github.com/" + repoName+ "/commit/" + sha;
-                        String apiUrl = "https://api.github.com/repos/" + repoName + "/commits/" + sha;
-                        urls.add(List.of(commitUrl, apiUrl));
-                    //테스트를 위해 모든 커밋을 다 불러옵니다.
-//                    if (today.format(formatter).equals(eventDate)) {//오늘꺼만 가져오기
-////                        String repoName = event.get("repo").get("name").asText();
-////                        String sha = event.get("payload").get("head").asText();
-////                        String commitUrl = "https://github.com/" + repoName+ "/commit/" + sha;
-//                        commitUrls.add("https://api.github.com/repos/"
-//                                + event.get("repo").get("name").asText()
-//                                + "/commit/"
-//                                + event.get("payload").get("head").asText()
-//                        );
-////                        commitUrls.add("https://github.com/"
-////                                + event.get("repo").get("name").asText()
-////                                + "/commit/"
-////                                + event.get("payload").get("head").asText()
-////                        );
-//
-//                    }
-                }
+                //PushEvent만 필터링
+                if (!"PushEvent".equals(event.get("type").asText())) continue;
+
+                ZonedDateTime kstDate = ZonedDateTime
+                        .parse(event.get("created_at").asText())
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+                String eventDate = kstDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                // 오늘 커밋한 이벤트만 필터링
+//                if (!eventDate.equals(LocalDate.now().toString())) continue;
+
+                String repoName = event.get("repo").get("name").asText();
+                String sha = event.get("payload").get("head").asText();
+                String commitUrl = "https://github.com/" + repoName + "/commit/" + sha;
+                String apiUrl = "https://api.github.com/repos/" + repoName + "/commits/" + sha;
+                urls.add(List.of(commitUrl, apiUrl));
             }
             return urls;
         }
@@ -121,6 +98,7 @@ public class CommitService {
     public List<CommitHistory> getTodayCommitsByGithubId(String githubId) {
         return commitHistoryRepository.findTodayCommitsByGithubId(githubId);
     }
+
     public List<CommitHistory> getCommitsByGithubId(String githubId) {
         User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
