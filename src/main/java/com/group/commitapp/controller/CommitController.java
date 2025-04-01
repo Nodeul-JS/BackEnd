@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping(value = "/api/commit")
 @Tag(name = "Github Commit", description = "Github Commit 관련 API")
-@AllArgsConstructor
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/api/commit")
 public class CommitController {
     private final CommitService commitService;
 

@@ -22,11 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-
-@RestController
 @Tag(name = "Chat-GPT", description = "GPT-4o Chat API")
-@RequestMapping("/gpt")
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/gpt")
 public class GPTController {
 
     @Value("${gpt.model}")

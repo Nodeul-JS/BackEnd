@@ -13,25 +13,21 @@ import com.group.commitapp.service.TeamService;
 import com.group.commitapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping(value = "/api/teams")
 @Tag(name = "Team", description = "Team 관련 API")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(value = "/api/teams")
 public class TeamController {
     private final TeamService teamService;
     private final MemberService memberService;
     private final UserService userService;
-    @Autowired
-    public TeamController(TeamService teamService, MemberService memberService, UserService userService){
-        this.teamService = teamService;
-        this.memberService = memberService;
-        this.userService = userService;
-    }
 
 
     @Operation(summary = "내가 가입한 팀 조회 ", description = "사용자가 속한 팀 리스트 정보 반환")

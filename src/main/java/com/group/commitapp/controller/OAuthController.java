@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Tag(name = "깃허브 OAuth", description = " 깃허브 OAuth 로그인 관련 API")
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "깃허브 OAuth", description = " 깃허브 OAuth 로그인 관련 API")
 @RequestMapping("/api")
 public class OAuthController {
     private final AuthService authService;
