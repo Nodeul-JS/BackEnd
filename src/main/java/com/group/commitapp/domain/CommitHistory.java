@@ -1,30 +1,23 @@
 package com.group.commitapp.domain;
 
-import com.group.commitapp.dto.commit.CommitHistoryDTO;
+import com.group.commitapp.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.Base64;
 import java.util.Date;
 
 @Entity
 @Table(name = "commitHistory")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommitHistory {
+public class CommitHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long historyId;
+    private Long id;
     private String title;
     @Lob
     private String description;
-//    private String askGpt;
-//    private Boolean isCommit;
-//    private Boolean isDescript;
-    private Date createdAt;
     private Integer good;
     private Integer bad;
     private String githubLink;
@@ -33,14 +26,28 @@ public class CommitHistory {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    public CommitHistory(CommitHistoryDTO commitHistoryDTO, User user) {
+    @Builder
+    private CommitHistory(String title, String description, String githubLink, User user) {
+        this.title = title;
+        this.description = description;
+        this.githubLink = githubLink;
         this.user = user;
-        this.title = commitHistoryDTO.getTitle();
-        this.description = commitHistoryDTO.getDescription();
-        this.githubLink = commitHistoryDTO.getGithubLink();
-        this.createdAt = new Date();
         this.good = 0;
         this.bad = 0;
     }
 
+    public static CommitHistory create(String title, String description, String githubLink, User user) {
+        return CommitHistory.builder()
+                .title(title)
+                .description(description)
+                .githubLink(githubLink)
+                .user(user)
+                .build();
+    }
+    public void addGood() {
+        this.good++;
+    }
+    public void addBad() {
+        this.bad++;
+    }
 }

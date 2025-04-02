@@ -1,21 +1,19 @@
 package com.group.commitapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group.commitapp.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "member")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private Long id;
+
     private Boolean isHead;
 
 
@@ -28,21 +26,31 @@ public class Member {
     @JoinColumn(name = "teamId")
     private Team team;
 
-    public Member(User user, Team team){
-        this(user, team, false);
-    }
-    public Member(User user, Team team, boolean isHead){
+
+    @Builder
+    private Member(User user, Team team, boolean isHead){
         this.user = user;
         this.team = team;
         this.isHead = isHead;
     }
-//    public static Member saveMember(User user, Team team, boolean isHead){
-//        Member member = new Member();
-//        member.setUser(user);
-//        member.setTeam(team);
-//        member.setIsHead(isHead);
-//        return member;
-//    }
 
+    public static Member createAsMember(User user, Team team){
+        return Member.builder()
+                .user(user)
+                .team(team)
+                .isHead(false)
+                .build();
+    }
 
+    public static Member createAsLeader(User user, Team team){
+        return Member.builder()
+                .user(user)
+                .team(team)
+                .isHead(true)
+                .build();
+    }
+
+    public Team geTeam(){
+        return this.team;
+    }
 }
