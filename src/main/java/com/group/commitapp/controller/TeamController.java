@@ -4,17 +4,12 @@ package com.group.commitapp.controller;
 import com.group.commitapp.common.dto.ApiResponse;
 import com.group.commitapp.common.enums.CustomResponseStatus;
 import com.group.commitapp.domain.Team;
-import com.group.commitapp.dto.team.createTeamDTO;
-import com.group.commitapp.dto.team.findTeamListDTO;
-import com.group.commitapp.dto.team.findMemberListDTO;
-import com.group.commitapp.dto.team.invitationTeamDTO;
-import com.group.commitapp.service.MemberService;
+import com.group.commitapp.dto.team.*;
 import com.group.commitapp.service.TeamService;
 import com.group.commitapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,14 +21,13 @@ import java.util.List;
 @RequestMapping(value = "/api/teams")
 public class TeamController {
     private final TeamService teamService;
-    private final MemberService memberService;
     private final UserService userService;
 
 
     @Operation(summary = "내가 가입한 팀 조회 ", description = "사용자가 속한 팀 리스트 정보 반환")
     @GetMapping("/myTeamList/{githubId}")
-    public ResponseEntity<ApiResponse<List<findTeamListDTO>>> findGroup(@PathVariable String githubId){
-        List<findTeamListDTO> teams = teamService.getTeamsByGitgubId(githubId);
+    public ResponseEntity<ApiResponse<List<TeamSearchResponse>>> findGroup(@PathVariable String githubId){
+        List<TeamSearchResponse> teams = teamService.getTeamsByGithubId(githubId);
         return ResponseEntity.ok(ApiResponse.createSuccess(teams, CustomResponseStatus.SUCCESS));
     }
 
@@ -41,17 +35,17 @@ public class TeamController {
 
     @Operation(description = "새로운 팀 생성(내가 팀 주인장 됨)", summary = "팀 생성 ")
     @PostMapping("")
-    public ResponseEntity<ApiResponse<Team>> createGroup(@RequestBody createTeamDTO dto){
-        Team team = teamService.createGroup(dto); // make empty team and save
-        return ResponseEntity.ok(ApiResponse.createSuccess(team, CustomResponseStatus.SUCCESS));
+    public ResponseEntity<ApiResponse<Void>> createGroup(@RequestBody TeamCreateRequest dto){
+        teamService.createGroup(dto); // make empty team and save
+        return ResponseEntity.ok(ApiResponse.createSuccess(null, CustomResponseStatus.SUCCESS));
     }
 
 
     @Operation(description = "팀 초대 (깃허브id로)  " , summary = "그룹 초대")
     @PostMapping("/invitation")
-    public ResponseEntity<ApiResponse<Void>> invitationGroup(@RequestBody invitationTeamDTO dto){
-        memberService.inviteMember(dto);
-        return ResponseEntity.ok(ApiResponse.createSuccess(null, CustomResponseStatus.SUCCESS));
+    public ResponseEntity<ApiResponse<MemberInviteResponse>> invitationGroup(@RequestBody MemberInviteRequest dto){
+        MemberInviteResponse response = teamService.inviteMember(dto);
+        return ResponseEntity.ok(ApiResponse.createSuccess(response, CustomResponseStatus.SUCCESS));
     }
 
     @Operation(description = "해당 팀의 팀원들 출력" , summary = "해당 팀의 팀원들 출력")

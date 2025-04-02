@@ -18,7 +18,7 @@ import org.w3c.dom.Text;
 @Getter
 public class findBadgeListDTO {
     public findBadgeListDTO(Badge badge, BadgeHistory badgeHistory) {
-        this.badgeId = badge.getBadgeId();
+        this.badgeId = badge.getId();
         this.badgeName = badge.getName();
         this.description = badge.getDescription();
         this.createdAt = badgeHistory.getCreatedAt().toString();

@@ -4,22 +4,16 @@ package com.group.commitapp.controller;
 import com.group.commitapp.common.dto.ApiResponse;
 import com.group.commitapp.common.enums.CustomResponseStatus;
 import com.group.commitapp.domain.CommitHistory;
-import com.group.commitapp.dto.commit.CommitHistoryDTO;
-import com.group.commitapp.dto.commit.CommitReviewDTO;
+import com.group.commitapp.dto.commit.CommitHistoryResponse;
 import com.group.commitapp.service.CommitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(name = "Github Commit", description = "Github Commit 관련 API")
 @RestController
@@ -48,8 +42,8 @@ public class CommitController {
 
     @PostMapping("/todayCommit/{githubId}")
     @Operation(summary =  " AI피드백 요청 &&백엔드DB에 커밋 이력 생성", description = "user의 커밋 이력 생성 - 오늘 깃허브 커밋 이력이 있어야함")
-    public ResponseEntity<ApiResponse<CommitHistory>> addReviewToCommit(@PathVariable String githubId) throws IOException {
-        CommitHistory updatedCommitHistory = commitService.addReviewToCommit(githubId);
+    public ResponseEntity<ApiResponse<CommitHistoryResponse>> addReviewToCommit(@PathVariable String githubId) throws IOException {
+        CommitHistoryResponse updatedCommitHistory = commitService.addReviewToCommit(githubId);
         return ResponseEntity.ok(ApiResponse.createSuccess(updatedCommitHistory, CustomResponseStatus.SUCCESS));
     }
 

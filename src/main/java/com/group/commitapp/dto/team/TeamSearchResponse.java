@@ -9,10 +9,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = " DTO")
 @Getter
 @RequiredArgsConstructor
-public class findTeamListDTO {
+public class TeamSearchResponse {
 
-    public findTeamListDTO(Team team) {
-        this.teamId = team.getTeamId();
+    public TeamSearchResponse(Team team) {
+        this.teamId = team.getId();
         this.teamName = team.getTeamName();
         this.currentMembers = team.getMembers().size();
         this.maxMembers = team.getMaxMember();

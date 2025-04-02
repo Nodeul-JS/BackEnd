@@ -6,7 +6,7 @@ import com.group.commitapp.common.enums.CustomResponseStatus;
 import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.CommitHistory;
 import com.group.commitapp.domain.User;
-import com.group.commitapp.dto.commit.CommitHistoryDTO;
+import com.group.commitapp.dto.commit.CommitHistoryResponse;
 import com.group.commitapp.repository.CommitHistoryRepository;
 import com.group.commitapp.repository.UserRepository;
 import okhttp3.OkHttpClient;
@@ -111,62 +111,61 @@ public class CommitService {
 
         List<CommitHistory> recentCommits = commitHistoryRepository.findByUserAndCreatedAtBetweenOrderByCreatedAtAsc(user, start, end);
 
-        // 커밋이 연속 3일간 있는지 확인
-        boolean hasStreak = checkStreak(recentCommits, 3);
-
-        // 3일 연속 커밋했으면 createStreakBadge 호출
-        if (hasStreak) {
-            Long badgeId = 2L; // 연속 커밋 뱃지 ID
-            badgeService.createStreakBadge(user.getUserId(), badgeId);
-        } else {
-            // 3일간 커밋이 없으면 createDeadBadge 호출
-            boolean hasNoCommitsForThreeDays = checkNoCommits(recentCommits, 3);
-            if (hasNoCommitsForThreeDays) {
-                Long badgeId = 3L; // Dead Badge ID
-                badgeService.createDeadBadge(user.getUserId(), badgeId);
-            }
-        }
+//        // 커밋이 연속 3일간 있는지 확인
+//        boolean hasStreak = checkStreak(recentCommits, 3);
+//
+//        // 3일 연속 커밋했으면 createStreakBadge 호출
+//        if (hasStreak) {
+//            Long badgeId = 2L; // 연속 커밋 뱃지 ID
+//            badgeService.createStreakBadge(user.getId(), badgeId);
+//        } else {
+//            // 3일간 커밋이 없으면 createDeadBadge 호출
+//            boolean hasNoCommitsForThreeDays = checkNoCommits(recentCommits, 3);
+//            if (hasNoCommitsForThreeDays) {
+//                Long badgeId = 3L; // Dead Badge ID
+//                badgeService.createDeadBadge(user.getId(), badgeId);
+//            }
+//        }
 
         // 전체 커밋 이력을 반환
-        return commitHistoryRepository.findByUserOrderByHistoryIdAsc(user);
+        return commitHistoryRepository.findByUserOrderByIdAsc(user);
     }
 
-    private boolean checkStreak(List<CommitHistory> recentCommits, int days) {
-        LocalDate today = LocalDate.now();
-        List<LocalDate> commitDates = recentCommits.stream()
-                .map(commit -> commit.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                .distinct()
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < days; i++) {
-            LocalDate dateToCheck = today.minusDays(i);
-            if (!commitDates.contains(dateToCheck)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-        private boolean checkNoCommits(List<CommitHistory> recentCommits, int days) {
-        LocalDate today = LocalDate.now();
-        List<LocalDate> commitDates = recentCommits.stream()
-                .map(commit -> commit.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                .distinct()
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < days; i++) {
-            LocalDate dateToCheck = today.minusDays(i);
-            if (commitDates.contains(dateToCheck)) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    private boolean checkStreak(List<CommitHistory> recentCommits, int days) {
+//        LocalDate today = LocalDate.now();
+//        List<LocalDate> commitDates = recentCommits.stream()
+//                .map(commit -> commit.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+//                .distinct()
+//                .collect(Collectors.toList());
+//
+//        for (int i = 0; i < days; i++) {
+//            LocalDate dateToCheck = today.minusDays(i);
+//            if (!commitDates.contains(dateToCheck)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
 
-//    @Autowired
-//    private GPTService gptService;
+//        private boolean checkNoCommits(List<CommitHistory> recentCommits, int days) {
+//        LocalDate today = LocalDate.now();
+//        List<LocalDate> commitDates = recentCommits.stream()
+//                .map(commit -> commit.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+//                .distinct()
+//                .collect(Collectors.toList());
+//
+//        for (int i = 0; i < days; i++) {
+//            LocalDate dateToCheck = today.minusDays(i);
+//            if (commitDates.contains(dateToCheck)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+
+
+
     /**
      * GPT내용 추가 해야함
      * */
@@ -189,7 +188,7 @@ public class CommitService {
         }
         return "{}";
     }
-    public CommitHistory addReviewToCommit(String githubId) throws IOException {
+    public CommitHistoryResponse addReviewToCommit(String githubId) throws IOException {
         // 커밋 히스토리를 데이터베이스에서 조회합니다.
         User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid github ID: " + githubId));
@@ -228,29 +227,26 @@ public class CommitService {
 //        String description = githubLink + "의 피드백 내용이 들어갈거임";
         //커밋이력은 여러개일수도 있지만, DB에는 1개만 넣는다고 가정할게요
 
-        CommitHistory commitHistory = new CommitHistory(
-                new CommitHistoryDTO(title, description, githubLink, githubId)
-                , user
-        );
+        CommitHistory commitHistory = CommitHistory.create(title, description, githubLink, user);
         userService.giveExperienceByUser(user);
         userRepository.save(user);
-
+        commitHistoryRepository.save(commitHistory);
         // 커밋 히스토리에 리뷰를 추가합니다.
         // 변경 사항을 데이터베이스에 저장합니다.
-        return commitHistoryRepository.save(commitHistory);
+        return CommitHistoryResponse.from(commitHistory);
     }
 
 
     public CommitHistory addGoodToCommit(Long historyId) {
         CommitHistory commitHistory = commitHistoryRepository.findById(historyId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
-        commitHistory.setGood(commitHistory.getGood() + 1);
+        commitHistory.addGood();
         return commitHistoryRepository.save(commitHistory);
     }
     public CommitHistory addBadToCommit(Long historyId) {
         CommitHistory commitHistory = commitHistoryRepository.findById(historyId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
-        commitHistory.setBad(commitHistory.getBad() + 1);
+        commitHistory.addBad();
         return commitHistoryRepository.save(commitHistory);
     }
 

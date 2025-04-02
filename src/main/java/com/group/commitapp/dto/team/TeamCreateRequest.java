@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Schema(description = "Group Create DTO")
-public class createTeamDTO {
+public class TeamCreateRequest {
     @Schema(description = "팀 이름")
     private String teamName;
 

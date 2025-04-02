@@ -96,12 +96,12 @@ public class AuthService {
         User findUser = userRepository.findByProviderId(oAuthInfo.getIdNumber()).orElseGet(() -> forceJoin(oAuthInfo));
 //        User findUser = userRepository.findByProviderId(oAuthInfo.getIdNumber()).orElseGet(() -> forceJoin(oAuthInfo));
 
-        String token = jwtUtil.createToken(String.valueOf(findUser.getUserId()));
+        String token = jwtUtil.createToken(String.valueOf(findUser.getId()));
         return new LoginResponse(token, oAuthInfo.getUsername());
     }
 
     private User forceJoin(OAuthInfo oAuthInfo) {
-        User user = User.of(oAuthInfo.getUsername(), oAuthInfo.getIdNumber());
+        User user = User.create(oAuthInfo.getUsername(), oAuthInfo.getIdNumber());
         System.out.println(user.getLevel());
         return userRepository.save(user);
     }

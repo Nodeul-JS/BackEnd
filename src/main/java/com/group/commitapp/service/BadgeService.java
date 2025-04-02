@@ -37,7 +37,7 @@ private final UserRepository userRepository;
         // 뱃지 기록에 해당하는 뱃지들을 조회하고 DTO 리스트로 변환
         List<findBadgeListDTO> badgeDTOs = new ArrayList<>();
         for (BadgeHistory badgeHistory : badgeHistories) {
-            Badge badge = badgeRepository.findById(badgeHistory.getBadge().getBadgeId())
+            Badge badge = badgeRepository.findById(badgeHistory.getBadge().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Invalid reward ID: Badge not found. Here is Service"));
             badgeDTOs.add(new findBadgeListDTO(badge, badgeHistory));
         }
@@ -66,7 +66,7 @@ private final UserRepository userRepository;
         }
 
         // Create and save BadgeHistory
-        BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
+        BadgeHistory badgeHistory = BadgeHistory.create(user, badge);
         badgeHistoryRepository.save(badgeHistory);
     }
 
@@ -81,7 +81,7 @@ private final UserRepository userRepository;
             return;
         }
         // Create and save BadgeHistory
-        BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
+        BadgeHistory badgeHistory = BadgeHistory.create(user, badge);
         badgeHistoryRepository.save(badgeHistory);
     }
 
@@ -96,7 +96,7 @@ private final UserRepository userRepository;
             return;
         }
         // Create and save BadgeHistory
-        BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
+        BadgeHistory badgeHistory = BadgeHistory.create(user, badge);
         badgeHistoryRepository.save(badgeHistory);
     }
 

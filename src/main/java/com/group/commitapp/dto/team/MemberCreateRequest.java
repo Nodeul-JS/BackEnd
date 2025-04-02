@@ -11,7 +11,7 @@ import lombok.Data;
 @Schema(description = " DTO")
 @Getter
 @AllArgsConstructor
-public class createMemberDTO {
+public class MemberCreateRequest {
     @Schema(description = "유저 아이디")
     private Long userId;
     @Schema(description = "팀 아이디")
