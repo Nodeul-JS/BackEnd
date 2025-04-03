@@ -16,7 +16,7 @@ public class CommitHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    @Lob
+    @Column(length = 2048)
     private String description;
     private Integer good;
     private Integer bad;

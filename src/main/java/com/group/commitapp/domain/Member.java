@@ -50,7 +50,4 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    public Team geTeam(){
-        return this.team;
-    }
 }
