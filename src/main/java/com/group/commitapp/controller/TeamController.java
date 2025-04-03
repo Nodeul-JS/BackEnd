@@ -3,7 +3,6 @@ package com.group.commitapp.controller;
 
 import com.group.commitapp.common.dto.ApiResponse;
 import com.group.commitapp.common.enums.CustomResponseStatus;
-import com.group.commitapp.domain.Team;
 import com.group.commitapp.dto.team.*;
 import com.group.commitapp.service.TeamService;
 import com.group.commitapp.service.UserService;
@@ -26,8 +25,8 @@ public class TeamController {
 
     @Operation(summary = "내가 가입한 팀 조회 ", description = "사용자가 속한 팀 리스트 정보 반환")
     @GetMapping("/myTeamList/{githubId}")
-    public ResponseEntity<ApiResponse<List<TeamSearchResponse>>> findGroup(@PathVariable String githubId){
-        List<TeamSearchResponse> teams = teamService.getTeamsByGithubId(githubId);
+    public ResponseEntity<ApiResponse<List<TeamInfoResponse>>> findGroup(@PathVariable String githubId){
+        List<TeamInfoResponse> teams = teamService.getTeamsByGithubId(githubId);
         return ResponseEntity.ok(ApiResponse.createSuccess(teams, CustomResponseStatus.SUCCESS));
     }
 
@@ -50,8 +49,8 @@ public class TeamController {
 
     @Operation(description = "해당 팀의 팀원들 출력" , summary = "해당 팀의 팀원들 출력")
     @GetMapping("/memberList/{teamId}")
-    public ResponseEntity<ApiResponse<List<findMemberListDTO>>> findGroupMembers(@PathVariable Long teamId){
-        List<findMemberListDTO> DtoList = teamService.getMemberListByTeamId(teamId);
+    public ResponseEntity<ApiResponse<List<MemberInfoResponse>>> findGroupMembers(@PathVariable Long teamId){
+        List<MemberInfoResponse> DtoList = teamService.getMemberListByTeamId(teamId);
         return ResponseEntity.ok(ApiResponse.createSuccess(DtoList, CustomResponseStatus.SUCCESS));
     }
 

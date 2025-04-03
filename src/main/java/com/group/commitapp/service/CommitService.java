@@ -77,12 +77,12 @@ public class CommitService {
                 //PushEvent만 필터링
                 if (!"PushEvent".equals(event.get("type").asText())) continue;
 
-                ZonedDateTime kstDate = ZonedDateTime
-                        .parse(event.get("created_at").asText())
-                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-                String eventDate = kstDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-                // 오늘 커밋한 이벤트만 필터링
+//                ZonedDateTime kstDate = ZonedDateTime
+//                        .parse(event.get("created_at").asText())
+//                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+//                String eventDate = kstDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//
+//                // 오늘 커밋한 이벤트만 필터링
 //                if (!eventDate.equals(LocalDate.now().toString())) continue;
 
                 String repoName = event.get("repo").get("name").asText();
@@ -99,17 +99,17 @@ public class CommitService {
         return commitHistoryRepository.findTodayCommitsByGithubId(githubId);
     }
 
-    public List<CommitHistory> getCommitsByGithubId(String githubId) {
+    public List<CommitHistoryResponse> getCommitHistoriesByGithubId(String githubId) {
         User user = userRepository.findByGithubId(githubId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다."));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
 
-        // 최근 3일간의 커밋 이력 조회
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusDays(2); // 최근 3일을 확인하려면 2일을 빼야 함
-        Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date end = Date.from(endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-        List<CommitHistory> recentCommits = commitHistoryRepository.findByUserAndCreatedAtBetweenOrderByCreatedAtAsc(user, start, end);
+//        // 최근 3일간의 커밋 이력 조회
+//        LocalDate endDate = LocalDate.now();
+//        LocalDate startDate = endDate.minusDays(2); // 최근 3일을 확인하려면 2일을 빼야 함
+//        Date start = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        Date end = Date.from(endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+//
+//        List<CommitHistory> recentCommits = commitHistoryRepository.findByUserAndCreatedAtBetweenOrderByCreatedAtAsc(user, start, end);
 
 //        // 커밋이 연속 3일간 있는지 확인
 //        boolean hasStreak = checkStreak(recentCommits, 3);
@@ -128,7 +128,8 @@ public class CommitService {
 //        }
 
         // 전체 커밋 이력을 반환
-        return commitHistoryRepository.findByUserOrderByIdAsc(user);
+        List<CommitHistory> commitHistories = commitHistoryRepository.findByUserOrderByIdAsc(user);
+        return CommitHistoryResponse.fromList(commitHistories);
     }
 
 //    private boolean checkStreak(List<CommitHistory> recentCommits, int days) {
@@ -191,7 +192,7 @@ public class CommitService {
     public CommitHistoryResponse addReviewToCommit(String githubId) throws IOException {
         // 커밋 히스토리를 데이터베이스에서 조회합니다.
         User user = userRepository.findByGithubId(githubId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid github ID: " + githubId));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
 
         // GPT API를 호출하여 리뷰를 받습니다.
         List<String> urls = getTodayCommitUrls(githubId).get(0);
@@ -237,17 +238,17 @@ public class CommitService {
     }
 
 
-    public CommitHistory addGoodToCommit(Long historyId) {
+    public int addGoodToCommit(Long historyId) {
         CommitHistory commitHistory = commitHistoryRepository.findById(historyId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.COMMIT_HISTORY_NOT_FOUND));
         commitHistory.addGood();
-        return commitHistoryRepository.save(commitHistory);
+        return commitHistoryRepository.save(commitHistory).getGood();
     }
-    public CommitHistory addBadToCommit(Long historyId) {
+    public int addBadToCommit(Long historyId) {
         CommitHistory commitHistory = commitHistoryRepository.findById(historyId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid history ID: " + historyId));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.COMMIT_HISTORY_NOT_FOUND));
         commitHistory.addBad();
-        return commitHistoryRepository.save(commitHistory);
+        return commitHistoryRepository.save(commitHistory).getBad();
     }
 
     public String getCommitStatusForToday(String githubId) throws IOException {

@@ -14,67 +14,51 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class TeamService {
 private final TeamRepository teamRepository;
- private final MemberRepository memberRepository;
- private final UserRepository userRepository;
- private final BadgeService badgeService;
+private final MemberRepository memberRepository;
+private final UserRepository userRepository;
+private final BadgeService badgeService;
 
-    @Transactional
-    public List<TeamSearchResponse> getTeamsByUserId(Long userId){
+    @Transactional(readOnly = true)
+    public List<TeamInfoResponse> getTeamsByUserId(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
         List<Member> members = memberRepository.findAllByUser(user);
         List<Team> Teams = members.stream().map(Member::getTeam).toList();
-        return Teams.stream()
-                .map(TeamSearchResponse::new)// 생성자 참조임 DTO 단에 Team 객체 단일 생성자 필요
-                .collect(Collectors.toList());
+        return TeamInfoResponse.fromList(Teams);
     }
 
 
-// @Transactional
-//    public List<findTeamListDTO> getTeamsByUserId(Long userId){
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
-//        List<Member> members = memberRepository.findAllByUser(user);
-//        List<Team> Teams = members.stream().map(Member::getTeam).toList();
-//        return Teams.stream()
-//                .map(findTeamListDTO::new)// 생성자 참조임 DTO 단에 Team 객체 단일 생성자 필요
-//                .collect(Collectors.toList());
-//    }
-    @Transactional
-    public List<TeamSearchResponse> getTeamsByGithubId(String githubId){
-        User user = userRepository.findByGithubId(githubId)
+    private User getUserByGithubId(String githubId) {
+        return userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
-        return user.getMembers()
-                                    .stream()
-                                    .sorted(Comparator.comparing(Member::getId))
-                                    .map(Member::getTeam)
-                                    .map(TeamSearchResponse::new)
-                                    .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<TeamInfoResponse> getTeamsByGithubId(String githubId){
+        User user = getUserByGithubId(githubId);
+        return TeamInfoResponse.fromList(user.getTeams());
     }
 
     @Transactional
     public void createGroup(TeamCreateRequest dto){
-        User user = userRepository.findByGithubId(dto.getGithubId())
-                .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
+        User user = getUserByGithubId(dto.getGithubId());
         Team team = Team.createWithLeader(dto.getTeamName(), dto.getMaxMember(), dto.getDescription(), user);
         teamRepository.save(team); // Team Constructor: Protected -> have to use save method(team.set...)
 
-        badgeService.createLeaderBadge(user , 1L); // 그룹 리더 뱃지 Id = 1
+        badgeService.createLeaderBadge(user); // 리더 뱃지 지급
     }
 
     @Transactional
     public void deleteGroup(Long teamId){
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: There is No ID. Here is Service"));
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.TEAM_NOT_FOUND));
         teamRepository.delete(team);
     }
 
@@ -97,15 +81,10 @@ private final TeamRepository teamRepository;
     }
 
     @Transactional
-    public List<findMemberListDTO> getMemberListByTeamId(Long teamId) {
+    public List<MemberInfoResponse> getMemberListByTeamId(Long teamId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new CustomException(CustomResponseStatus.TEAM_NOT_FOUND));
-        List<findMemberListDTO> members = new ArrayList<>();
-
-        team.getMembers()
-                .stream().sorted( Comparator.comparing(Member::getId))
-                .forEach(member -> members.add(new findMemberListDTO(member)));
-        return members;
+        return MemberInfoResponse.fromList(team.getMembers());
     }
 
 

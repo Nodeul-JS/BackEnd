@@ -11,23 +11,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public List<UserInfoResponse> getAllUser() {
-        return userRepository.findAll()
-                .stream()
-                .map(UserInfoResponse::new)
-                .toList();
+        List<User> users =  userRepository.findAll();
+        return UserInfoResponse.fromList(users);
     }
 
-    public User getUserByGithubId(String githubId) {
-        return userRepository.findByGithubId(githubId)
+    @Transactional(readOnly = true)
+    public UserInfoResponse getUserByGithubId(String githubId) {
+        User user = userRepository.findByGithubId(githubId)
                 .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
+        return UserInfoResponse.from(user);
     }
-
+    @Transactional
     public void giveExperienceByUser(User user) {
         user.addExperience(10);
     }

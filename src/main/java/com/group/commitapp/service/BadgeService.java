@@ -5,8 +5,8 @@ import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.Badge;
 import com.group.commitapp.domain.BadgeHistory;
 import com.group.commitapp.domain.User;
-import com.group.commitapp.dto.badge.findBadgeDTO;
-import com.group.commitapp.dto.badge.findBadgeListDTO;
+import com.group.commitapp.dto.badge.BadgeInfoResponse;
+import com.group.commitapp.dto.badge.findBadgeListResponse;
 import com.group.commitapp.repository.BadgeHistoryRepository;
 import com.group.commitapp.repository.BadgeRepository;
 import com.group.commitapp.repository.UserRepository;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,39 +24,26 @@ private final BadgeRepository badgeRepository;
 private final UserRepository userRepository;
 
 
-    @Transactional
-    public List<findBadgeListDTO> findBadgeList(String githubId) { // 변수명 오류 수정: usersid -> usersId
+    @Transactional(readOnly = true)
+    public List<findBadgeListResponse> findBadgeList(String githubId) { // 변수명 오류 수정: usersid -> usersId
         // 사용자 정보 조회
         User user = userRepository.findByGithubId(githubId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
-
+                .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
         // 사용자의 뱃지 기록 조회
-        List<BadgeHistory> badgeHistories = badgeHistoryRepository.findAllByUser(user);
-
-        // 뱃지 기록에 해당하는 뱃지들을 조회하고 DTO 리스트로 변환
-        List<findBadgeListDTO> badgeDTOs = new ArrayList<>();
-        for (BadgeHistory badgeHistory : badgeHistories) {
-            Badge badge = badgeRepository.findById(badgeHistory.getBadge().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid reward ID: Badge not found. Here is Service"));
-            badgeDTOs.add(new findBadgeListDTO(badge, badgeHistory));
-        }
-
-        return badgeDTOs;
+        return findBadgeListResponse.fromList(badgeHistoryRepository.findAllByUser(user));
     }
 
 
-    @Transactional
-    public findBadgeDTO findBadge(Long badgeId) // find one!! Badge
-    {
+    @Transactional(readOnly = true)
+    public BadgeInfoResponse findBadge(Long badgeId){ // find one!! Badge
         Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
                 .orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
-        return new findBadgeDTO(badge);
-
+        return BadgeInfoResponse.from(badge);
     }
 
     @Transactional
-    public void createLeaderBadge(User user, Long badgeId) {
-        Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
+    public void createLeaderBadge(User user) {
+        Badge badge = badgeRepository.findById(1L) // 그룹 리더 뱃지 Id = 1
                 .orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
 
         //이미 뱃지를 받은 이력이 있으면
@@ -70,6 +56,10 @@ private final UserRepository userRepository;
         badgeHistoryRepository.save(badgeHistory);
     }
 
+
+    /**
+     * 아래 코드들은 현재 사용X, 추후 개편
+     * */
     @Transactional
     public void createStreakBadge(Long userId, Long badgeId) {
 

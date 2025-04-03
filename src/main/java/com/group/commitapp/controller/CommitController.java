@@ -3,7 +3,6 @@ package com.group.commitapp.controller;
 
 import com.group.commitapp.common.dto.ApiResponse;
 import com.group.commitapp.common.enums.CustomResponseStatus;
-import com.group.commitapp.domain.CommitHistory;
 import com.group.commitapp.dto.commit.CommitHistoryResponse;
 import com.group.commitapp.service.CommitService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,8 +48,8 @@ public class CommitController {
 
     @GetMapping("/commitHistory/{githubId}")
     @Operation(summary =  "역대 모든 커밋히스토리(백엔드DB에 있는거) 조회", description = "user의 모든 커밋 이력 조회")
-    public ResponseEntity<ApiResponse<List<CommitHistory>>> getTodayCommits(@PathVariable String githubId) {
-        List<CommitHistory> commitHistories = commitService.getCommitsByGithubId(githubId);
+    public ResponseEntity<ApiResponse<List<CommitHistoryResponse>>> getTodayCommits(@PathVariable String githubId) {
+        List<CommitHistoryResponse> commitHistories = commitService.getCommitHistoriesByGithubId(githubId);
         return ResponseEntity.ok(ApiResponse.createSuccess(commitHistories, CustomResponseStatus.SUCCESS));
     }
 
@@ -58,13 +57,15 @@ public class CommitController {
     @PostMapping("/good/{historyId}")
     @Operation(summary =  "해당 커밋의 좋아요버튼 숫자 1증가", description = "해당 historyId커밋의 좋아요 값 1 증가")
     public ResponseEntity<ApiResponse<Integer>> addGoodToCommit(@PathVariable long historyId) {
-        int goodValue = commitService.addGoodToCommit(historyId).getGood();
+        int goodValue = commitService.addGoodToCommit(historyId);
         return ResponseEntity.ok().body(ApiResponse.createSuccess(goodValue, CustomResponseStatus.SUCCESS));
     }
+
+
     @PostMapping("/bad/{historyId}")
     @Operation(summary =  "해당 커밋의 싫어요버튼 숫자1 증가", description = "해당 historyId커밋의 싫어요 값 1 증가")
     public ResponseEntity<ApiResponse<Integer>> addBadToCommit(@PathVariable long historyId) {
-        int badValue = commitService.addBadToCommit(historyId).getBad();
+        int badValue = commitService.addBadToCommit(historyId);
         return ResponseEntity.ok().body(ApiResponse.createSuccess(badValue, CustomResponseStatus.SUCCESS));
     }
 

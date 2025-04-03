@@ -2,7 +2,6 @@
 package com.group.commitapp.service;
 
 import com.group.commitapp.config.jwt.util.JwtUtil;
-//import com.group.commitapp.config.
 import com.group.commitapp.dto.oauth.AccessToken;
 import com.group.commitapp.dto.oauth.OAuthInfo;
 import com.group.commitapp.domain.User;
@@ -91,10 +90,7 @@ public class AuthService {
     }
 
     public LoginResponse login(OAuthInfo oAuthInfo) {
-//        System.out.println(oAuthInfo.getUsername())
-//        ;
         User findUser = userRepository.findByProviderId(oAuthInfo.getIdNumber()).orElseGet(() -> forceJoin(oAuthInfo));
-//        User findUser = userRepository.findByProviderId(oAuthInfo.getIdNumber()).orElseGet(() -> forceJoin(oAuthInfo));
 
         String token = jwtUtil.createToken(String.valueOf(findUser.getId()));
         return new LoginResponse(token, oAuthInfo.getUsername());

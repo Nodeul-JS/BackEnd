@@ -27,7 +27,7 @@ public class UserController {
     @Operation(summary =  "user정보 조회", description = "githubId로 user정보 조회")
     @GetMapping("/mypage/{githubId}")
     public ResponseEntity<ApiResponse<UserInfoResponse>> getUserByGithubId(@PathVariable String githubId) {
-        UserInfoResponse userInfoResponse = new UserInfoResponse(userService.getUserByGithubId(githubId));
+        UserInfoResponse userInfoResponse = userService.getUserByGithubId(githubId);
         return ResponseEntity.ok().body(ApiResponse.createSuccess(userInfoResponse, CustomResponseStatus.SUCCESS));
     }
 
