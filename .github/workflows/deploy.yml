@@ -1,4 +1,4 @@
-name: Deploy Spring Boot to EC2 - CD
+name: Deploy Spring Boot App with Gradle and Docker
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master  # master 브랜치에 push될 때 실행
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:

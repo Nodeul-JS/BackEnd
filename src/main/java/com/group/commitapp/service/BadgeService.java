@@ -5,102 +5,109 @@ import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.Badge;
 import com.group.commitapp.domain.BadgeHistory;
 import com.group.commitapp.domain.User;
-import com.group.commitapp.dto.badge.findBadgeDTO;
-import com.group.commitapp.dto.badge.findBadgeListDTO;
+import com.group.commitapp.dto.badge.BadgeInfoResponse;
+import com.group.commitapp.dto.badge.findBadgeListResponse;
 import com.group.commitapp.repository.BadgeHistoryRepository;
 import com.group.commitapp.repository.BadgeRepository;
 import com.group.commitapp.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class BadgeService {
-private final BadgeHistoryRepository badgeHistoryRepository;
-private final BadgeRepository badgeRepository;
-private final UserRepository userRepository;
+	private final BadgeHistoryRepository badgeHistoryRepository;
+	private final BadgeRepository badgeRepository;
+	private final UserRepository userRepository;
 
+	@Transactional(readOnly = true)
+	public List<findBadgeListResponse> findBadgeList(
+			String githubId) { // 변수명 오류 수정: usersid -> usersId
+		// 사용자 정보 조회
+		User user =
+				userRepository
+						.findByGithubId(githubId)
+						.orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
+		// 사용자의 뱃지 기록 조회
+		return findBadgeListResponse.fromList(badgeHistoryRepository.findAllByUser(user));
+	}
 
-    @Transactional
-    public List<findBadgeListDTO> findBadgeList(String githubId) { // 변수명 오류 수정: usersid -> usersId
-        // 사용자 정보 조회
-        User user = userRepository.findByGithubId(githubId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: There is No ID. Here is Service"));
+	@Transactional(readOnly = true)
+	public BadgeInfoResponse findBadge(Long badgeId) { // find one!! Badge
+		Badge badge =
+				badgeRepository
+						.findById(badgeId) // 그룹 리더 뱃지 Id = 1
+						.orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
+		return BadgeInfoResponse.from(badge);
+	}
 
-        // 사용자의 뱃지 기록 조회
-        List<BadgeHistory> badgeHistories = badgeHistoryRepository.findAllByUser(user);
+	@Transactional
+	public void createLeaderBadge(User user) {
+		Badge badge =
+				badgeRepository
+						.findById(1L) // 그룹 리더 뱃지 Id = 1
+						.orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
 
-        // 뱃지 기록에 해당하는 뱃지들을 조회하고 DTO 리스트로 변환
-        List<findBadgeListDTO> badgeDTOs = new ArrayList<>();
-        for (BadgeHistory badgeHistory : badgeHistories) {
-            Badge badge = badgeRepository.findById(badgeHistory.getBadge().getBadgeId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid reward ID: Badge not found. Here is Service"));
-            badgeDTOs.add(new findBadgeListDTO(badge, badgeHistory));
-        }
+		// 이미 뱃지를 받은 이력이 있으면
+		if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
+			return;
+		}
 
-        return badgeDTOs;
-    }
+		// Create and save BadgeHistory
+		BadgeHistory badgeHistory = BadgeHistory.create(user, badge);
+		badgeHistoryRepository.save(badgeHistory);
+	}
 
+	/** 아래 코드들은 현재 사용X, 추후 개편 */
+	@Transactional
+	public void createStreakBadge(Long userId, Long badgeId) {
 
-    @Transactional
-    public findBadgeDTO findBadge(Long badgeId) // find one!! Badge
-    {
-        Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
-                .orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
-        return new findBadgeDTO(badge);
+		User user =
+				userRepository
+						.findById(userId)
+						.orElseThrow(
+								() ->
+										new IllegalArgumentException(
+												"Invalid user ID!! : There is No ID. Here is Service"));
+		Badge badge =
+				badgeRepository
+						.findById(badgeId) // 연속 커밋 뱃지 Id = 2
+						.orElseThrow(
+								() ->
+										new IllegalArgumentException(
+												"Invalid badge ID!! : There is No ID. Here is Service"));
+		if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
+			return;
+		}
+		// Create and save BadgeHistory
+		BadgeHistory badgeHistory = BadgeHistory.create(user, badge);
+		badgeHistoryRepository.save(badgeHistory);
+	}
 
-    }
+	@Transactional
+	public void createDeadBadge(Long userId, Long badgeId) {
 
-    @Transactional
-    public void createLeaderBadge(User user, Long badgeId) {
-        Badge badge = badgeRepository.findById(badgeId) // 그룹 리더 뱃지 Id = 1
-                .orElseThrow(() -> new CustomException(CustomResponseStatus.BADGE_NOT_FOUND));
-
-        //이미 뱃지를 받은 이력이 있으면
-        if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
-            return;
-        }
-
-        // Create and save BadgeHistory
-        BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
-        badgeHistoryRepository.save(badgeHistory);
-    }
-
-    @Transactional
-    public void createStreakBadge(Long userId, Long badgeId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
-        Badge badge = badgeRepository.findById(badgeId) // 연속 커밋 뱃지 Id = 2
-                .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
-        if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
-            return;
-        }
-        // Create and save BadgeHistory
-        BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
-        badgeHistoryRepository.save(badgeHistory);
-    }
-
-    @Transactional
-    public void createDeadBadge(Long userId, Long badgeId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID!! : There is No ID. Here is Service"));
-        Badge badge = badgeRepository.findById(badgeId) // Dead Badge ID :3
-                .orElseThrow(() -> new IllegalArgumentException("Invalid badge ID!! : There is No ID. Here is Service"));
-        if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
-            return;
-        }
-        // Create and save BadgeHistory
-        BadgeHistory badgeHistory = BadgeHistory.saveBadgeHistory(user, badge);
-        badgeHistoryRepository.save(badgeHistory);
-    }
-
-
-
-
+		User user =
+				userRepository
+						.findById(userId)
+						.orElseThrow(
+								() ->
+										new IllegalArgumentException(
+												"Invalid user ID!! : There is No ID. Here is Service"));
+		Badge badge =
+				badgeRepository
+						.findById(badgeId) // Dead Badge ID :3
+						.orElseThrow(
+								() ->
+										new IllegalArgumentException(
+												"Invalid badge ID!! : There is No ID. Here is Service"));
+		if (badgeHistoryRepository.findByUserAndBadge(user, badge).isPresent()) {
+			return;
+		}
+		// Create and save BadgeHistory
+		BadgeHistory badgeHistory = BadgeHistory.create(user, badge);
+		badgeHistoryRepository.save(badgeHistory);
+	}
 }

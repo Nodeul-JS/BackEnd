@@ -1,31 +1,37 @@
 package com.group.commitapp.service;
+
 import com.group.commitapp.common.enums.CustomResponseStatus;
 import com.group.commitapp.common.exception.CustomException;
 import com.group.commitapp.domain.User;
+import com.group.commitapp.dto.user.UserInfoResponse;
 import com.group.commitapp.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
+	@Transactional(readOnly = true)
+	public List<UserInfoResponse> getAllUser() {
+		List<User> users = userRepository.findAll();
+		return UserInfoResponse.fromList(users);
+	}
 
-    public User getUserByGithubId(String githubId) {
-        return userRepository.findByGithubId(githubId)
-                .orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
-    }
+	@Transactional(readOnly = true)
+	public UserInfoResponse getUserByGithubId(String githubId) {
+		User user =
+				userRepository
+						.findByGithubId(githubId)
+						.orElseThrow(() -> new CustomException(CustomResponseStatus.MEMBER_NOT_FOUND));
+		return UserInfoResponse.from(user);
+	}
 
-    public User giveExperienceByUser(User user) {
-        int experience = user.getExperience() + 9;
-        if(experience >= 10) {
-            user.setLevel(user.getLevel() + 1);
-            experience -= 10;
-        }
-        user.setExperience(experience);
-        return user;
-    }
+	@Transactional
+	public void giveExperienceByUser(User user) {
+		user.addExperience(10);
+	}
 }

@@ -1,50 +1,65 @@
 package com.group.commitapp.domain;
 
-import com.group.commitapp.dto.request.team.CreateTeamRequest;
-import com.group.commitapp.dto.team.createTeamDTO;
+import com.group.commitapp.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.*;
 
 @Entity
 @Table(name = "team")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long teamId;
-    @Column(nullable = false, length = 255, name = "team_name")
-    private String teamName;
-    private Integer maxMember;
-    @Lob
-    private String description;
-    private boolean isDeleted;
+public class Team extends BaseEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
+	@Column(nullable = false, length = 255, name = "team_name")
+	private String teamName;
 
+	@Column(nullable = false)
+	private Integer maxMember;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Member> members;
+	@Column(length = 1000)
+	private String description;
 
-    // 생성자에 DTO를 전달받아 초기화하는 생성자
-    public Team(createTeamDTO request) {
-        this.teamName = request.getTeamName();
-        this.maxMember = request.getMaxMember();
-        this.description = request.getDescription();
-    }
+	private boolean isDeleted = false;
 
-    public static Team saveTeam(String teamName, Integer maxMember, String description) {
-        Team team = new Team();
-        team.setTeamName(teamName);
-        team.setMaxMember(maxMember);
-        team.setDescription(description);
-        return team;
-    }
+	@OneToMany(
+			mappedBy = "team",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true,
+			fetch = FetchType.LAZY)
+	private List<Member> members = new ArrayList<>();
 
+	@Builder
+	private Team(String teamName, Integer maxMember, String description) {
+		this.teamName = teamName;
+		this.maxMember = maxMember;
+		this.description = description;
+	}
+
+	public static Team createWithLeader(
+			String teamName, Integer maxMember, String description, User leader) {
+		Team team =
+				Team.builder().teamName(teamName).maxMember(maxMember).description(description).build();
+
+		team.addLeader(leader);
+		return team;
+	}
+
+	public void addLeader(User user) {
+		Member leader = Member.createAsLeader(user, this);
+		this.members.add(leader);
+	}
+
+	public void addMember(User user) {
+		Member member = Member.createAsMember(user, this);
+		this.members.add(member);
+	}
+
+	public void deleteTeam() {
+		this.isDeleted = true;
+	}
 }
