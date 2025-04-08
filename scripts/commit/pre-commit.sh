@@ -1,3 +1,5 @@
+# installGitHooks task를 통해 SpotlessApply를 실행해야함. 안그러면 gradlew이 없어서 에러남
+
 # 변경된 파일들 이름만 추출하여 저장
 stagedFiles=$(git diff --staged --name-only)
 # SpotlessApply 실행
