@@ -6,15 +6,13 @@ import lombok.Getter;
 
 @Getter
 public class OAuthInfo {
-    private final String username;
-    private final String idNumber;
+	private final String username;
+	private final String idNumber;
 
-    @JsonCreator
-    public OAuthInfo(
-            @JsonProperty("login") String username,
-            @JsonProperty("id") String idNumber) {
+	@JsonCreator
+	public OAuthInfo(@JsonProperty("login") String username, @JsonProperty("id") String idNumber) {
 
-        this.username = username;
-        this.idNumber = idNumber;
-    }
+		this.username = username;
+		this.idNumber = idNumber;
+	}
 }

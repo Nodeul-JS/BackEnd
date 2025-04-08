@@ -7,15 +7,12 @@ import lombok.Builder;
 @Schema(description = "GET:단일 뱃지 조회 DTO")
 @Builder
 public record BadgeInfoResponse(
-        @Schema(description = "뱃지 이름", example = "Best Commiter")
-        String badgeName,
-        @Schema(description = "뱃지 설명")
-        String description
-) {
-    public static BadgeInfoResponse from(Badge badge) {
-        return BadgeInfoResponse.builder()
-                .badgeName(badge.getName())
-                .description(badge.getDescription())
-                .build();
-    }
+		@Schema(description = "뱃지 이름", example = "Best Commiter") String badgeName,
+		@Schema(description = "뱃지 설명") String description) {
+	public static BadgeInfoResponse from(Badge badge) {
+		return BadgeInfoResponse.builder()
+				.badgeName(badge.getName())
+				.description(badge.getDescription())
+				.build();
+	}
 }
